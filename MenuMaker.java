@@ -1268,11 +1268,11 @@ public class MenuMaker extends javax.swing.JFrame {
             System.out.println("\t" + lunchMenu.get(i));
         }
         System.out.println("-----------------------------------------------------");
-        clearMenu(lunchMenu, lunchModel, lunchList, 0);
+        clearMenu(lunchMenu, lunchModel, lunchList, 1);
     }//GEN-LAST:event_jButton10MouseClicked
 
     private void jButton11MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton11MouseClicked
-        // lunch menu submit clicked
+        // dinner menu submit clicked
         System.out.println("-----------------------------------------------------");
         System.out.println("Dinner menu submit clicked");
         System.out.println("Date: " + dateSpinner.getValue().toString());
@@ -1280,7 +1280,7 @@ public class MenuMaker extends javax.swing.JFrame {
             System.out.println("\t" + dinnerMenu.get(i));
         }
         System.out.println("-----------------------------------------------------");
-        clearMenu(dinnerMenu, dinnerModel, dinnerList, 0);
+        clearMenu(dinnerMenu, dinnerModel, dinnerList, 2);
         quantitySpinner.setEnabled(false);
     }//GEN-LAST:event_jButton11MouseClicked
 
