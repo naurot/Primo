@@ -15,7 +15,10 @@ import javax.swing.JList;
 public class RecipeMaker extends javax.swing.JFrame {
 
     Metodos metodos = new Metodos();
-    String[] units = {"ounce", "ounces", "lb", "lbs", "tsp", "Tbs", "cup", "cups", "pint", "pints", "quart", "quarts", "gal", "gals", "dash"};
+    String[] units = {"1", "2", "3", "4", "5"};
+//    String[] units = {"ounce", "ounces", "lb", "lbs", "tsp", "Tbs", "cup", "cups", "pint", "pints", "quart", "quarts", "gal", "gals", "dash"};
+    static int dishID = -1;
+    static int ingListIdx = -1;
 
     /**
      * Creates new form RecipeMaker
@@ -536,6 +539,11 @@ public class RecipeMaker extends javax.swing.JFrame {
 
         jButton1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jButton1.setText("Logout");
+        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton1MouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel10Layout = new javax.swing.GroupLayout(jPanel10);
         jPanel10.setLayout(jPanel10Layout);
@@ -620,19 +628,43 @@ public class RecipeMaker extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void cancelRecipeIngAllMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cancelRecipeIngAllMouseClicked
-        // TODO add your handling code here:
-
+        // clicked cancel button under ingredients
+        //if create - clear ingredients
+        //   update - clear inedients and reload update page
+        //   delete - do nothing
+        if (createRecipeBtn.isSelected()) {
+            clearFieldsForIng();
+        }
+        if (updateRecipeBtn.isSelected()) {
+            clearFieldsForDish();
+            updateRecipeBtn.doClick(50);
+        }
     }//GEN-LAST:event_cancelRecipeIngAllMouseClicked
 
     private void submitRecipeIngMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_submitRecipeIngMouseClicked
-        // TODO add your handling code here:
-        if (allFieldsValidated()) {
-            // connect to db
-            //update recipe db
-            //       consists_of db
-            //close connect
-            //clear form
-            clearFieldsForIng();
+        // submit clicked. if update recipe => update, create recipe -> create, delete -> nothing
+        if (!recipeNameTextField.getText().isEmpty() && !numServingsTextField.getText().isEmpty() && !usedIngList.isEmpty() && !delRadioBtn.isSelected()) {
+            // metodos
+            // if create -> create dish, then create consists_of
+            //    update -> update consists_of (update dish too???)
+            // and whart's the fucking query for this???
+            DishType newRecipe = new DishType();
+            newRecipe.id = getDishID();
+            newRecipe.name = recipeNameTextField.getText();
+            newRecipe.numServings = Integer.parseInt(numServingsTextField.getText());
+            newRecipe.dishType = getDishType();
+            newRecipe.mealType = getMealType();
+            if (createRecipeBtn.isSelected()) {
+                metodos.createRecipe(newRecipe, usedIngList);
+                clearFieldsForDish();
+                clearFieldsForIng();
+            } else if (updateRecipeBtn.isSelected()) {
+                metodos.updateRecipe(newRecipe, usedIngList);
+                clearFieldsForIng();
+                clearFieldsForDish();
+            } else {
+                System.out.println("Submit clicked. something you didn't expect");
+            }
         }
     }//GEN-LAST:event_submitRecipeIngMouseClicked
 
@@ -660,8 +692,12 @@ public class RecipeMaker extends javax.swing.JFrame {
         // in RecipeMaker, item form jList1 clicked
         if (ingredientRecipeTextBox.getText().isEmpty()) {
             if (createRecipeBtn.isSelected()) {
-                System.out.println("Editing: " + ingredientList.get(ingOrDishList.getSelectedIndex()).name);
+                //creating new recipe; selected ingredient; put ingredient in edit box
+                setIngListIdx(ingOrDishList.getSelectedIndex());
+                System.out.println("Editing: " + ingredientList.get(getIngListIdx()).name);
                 String selectedItem = ingOrDishList.getSelectedValue();
+                //if the ingredient is already in accepted list,
+                //    remove it and place all parameters in edit box
                 int i;
                 int j = -1;
                 for (i = 0; i < usedIngList.size(); i++) {
@@ -682,10 +718,18 @@ public class RecipeMaker extends javax.swing.JFrame {
                 }
             } else if (delRadioBtn.isSelected()) {
                 //delete recipe
+                //  delete all ingredients from consists_of table
+                //  delete dish from dish table
+
                 System.out.println("Deleted: " + ingOrDishList.getSelectedValue());
                 System.out.println("Deleting: " + dishList.get(ingOrDishList.getSelectedIndex()).name);
+                metodos.deleteDish(dishList.get(ingOrDishList.getSelectedIndex()).id);
+                clearFieldsForDish();
+                delRadioBtn.doClick(50);
             } else if (ingRecipeLabel.getText().equals("Recipes")) {
+                //updating a recipe
                 int index = ingOrDishList.getSelectedIndex();
+                setDishID(dishList.get(index).id);
                 recipeNameTextField.setText(dishList.get(index).name); //put the recipe name in recipe box
                 numServingsTextField.setText("" + dishList.get(index).numServings);
                 int meal = dishList.get(index).mealType;
@@ -715,6 +759,8 @@ public class RecipeMaker extends javax.swing.JFrame {
                 }
                 acceptedIngList.setModel(acceptedIngModel);
             } else {
+                System.out.println("Updating recipe, selecting from ingredient list");
+                setIngListIdx(ingOrDishList.getSelectedIndex());
                 ingredientRecipeTextBox.setText(ingOrDishList.getSelectedValue());
                 System.out.println("Editing: " + ingredientList.get(ingOrDishList.getSelectedIndex()).name);
                 String selectedItem = ingOrDishList.getSelectedValue();
@@ -760,14 +806,15 @@ public class RecipeMaker extends javax.swing.JFrame {
 
     private void addIngSingleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addIngSingleActionPerformed
         // move ingredient from edit box to ingredient list of (new recipe || updated recipe)
-        if (!ingredientRecipeTextBox.getText().equals("") && 
-                !(ingQuantityTextField.getText().equals("") || (Float.parseFloat(ingQuantityTextField.getText()) < 0.001 ))) {
-            String ing = ingredientRecipeTextBox.getText();
+        if (!ingredientRecipeTextBox.getText().equals("")
+                && !(ingQuantityTextField.getText().equals("") || (Float.parseFloat(ingQuantityTextField.getText()) < 0.001))) {
+//            String ing = ingredientRecipeTextBox.getText();
             String amount = ingQuantityTextField.getText();
             String units = ingMeasureCombo.getSelectedItem().toString();
-            usedTmp = new UsedIngredientType(ing, amount, units);
+            usedTmp = new UsedIngredientType(ingredientList.get(getIngListIdx()), amount, units);
+            setIngListIdx(-1);
             usedIngList.add(usedTmp);
-            acceptedIngModel.addElement(amount + " " + units + "      " + ing);
+            acceptedIngModel.addElement(amount + " " + units + "      " + usedTmp.name);
             acceptedIngList.setModel(acceptedIngModel);
             ingredientRecipeTextBox.setText("");
             ingQuantityTextField.setText("");
@@ -794,8 +841,18 @@ public class RecipeMaker extends javax.swing.JFrame {
         // clicked on an ingredient in accepted ingredient list
         //edit it
         int index = acceptedIngList.getSelectedIndex();
+
         if (ingredientRecipeTextBox.getText().isEmpty() && index >= 0) {
+
             UsedIngredientType tmp = usedIngList.get(index);
+            for (int i = 0; i < ingredientList.size(); i++) {
+                IngredientType ing = ingredientList.get(i);
+                if (ing.id == tmp.id && ing.brandID == tmp.brandID && ing.brandName.equals(tmp.brandName)) {
+                    setIngListIdx(i);
+                    i = ingredientList.size();
+                }
+            }
+
             ingredientRecipeTextBox.setText(tmp.name);
             ingQuantityTextField.setText(tmp.amount);
             ingMeasureCombo.setSelectedItem(tmp.units);
@@ -806,7 +863,6 @@ public class RecipeMaker extends javax.swing.JFrame {
             }
             acceptedIngList.setModel(acceptedIngModel);
         }
-        // out nothing here
     }//GEN-LAST:event_acceptedIngListMouseClicked
 
     private void numServingsTextFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_numServingsTextFieldKeyTyped
@@ -837,6 +893,12 @@ public class RecipeMaker extends javax.swing.JFrame {
             System.out.println("Must be an integer:" + e);
         }
     }//GEN-LAST:event_ingQuantityTextFieldKeyTyped
+
+    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
+        // mouse clicked logout
+        setVisible(false);
+        dispose();
+    }//GEN-LAST:event_jButton1MouseClicked
 
     /**
      * @param args the command line arguments
@@ -929,6 +991,8 @@ public class RecipeMaker extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
     private void clearFields() {
+        setDishID(-1);
+        setIngListIdx(-1);
         recipeNameTextField.setText("");
         numServingsTextField.setText("");
         breakMealBtn.setSelected(true);
@@ -966,6 +1030,46 @@ public class RecipeMaker extends javax.swing.JFrame {
             dishModel.addElement(dish.name);
         }
         ingOrDishList.setModel(dishModel);
+    }
+
+    public int getDishType() {
+        if (appCatBtn.isSelected()) {
+            return 1;
+        }
+        if (sideCatBtn.isSelected()) {
+            return 2;
+        }
+        if (entreeCatBtn.isSelected()) {
+            return 3;
+        }
+        if (dessertCatBtn.isSelected()) {
+            return 4;
+        }
+        return 0;
+    }
+
+    public int getMealType() {
+        int retValue = 0;
+        retValue = retValue + (breakMealBtn.isSelected() ? 1 : 0);
+        retValue = retValue + (lunchMealBtn.isSelected() ? 2 : 0);
+        retValue = retValue + (dinnerMealBtn.isSelected() ? 4 : 0);
+        return retValue;
+    }
+
+    public static void setDishID(int id) {
+        dishID = id;
+    }
+
+    public static int getDishID() {
+        return dishID;
+    }
+
+    public static void setIngListIdx(int index) {
+        ingListIdx = index;
+    }
+
+    public static int getIngListIdx() {
+        return ingListIdx;
     }
 
     private boolean allFieldsValidated() {
