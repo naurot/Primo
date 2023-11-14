@@ -594,6 +594,9 @@ public class MenuMaker extends javax.swing.JFrame {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 dinnerListMouseClicked(evt);
             }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                dinnerListMouseEntered(evt);
+            }
         });
         jScrollPane5.setViewportView(dinnerList);
 
@@ -1207,8 +1210,9 @@ public class MenuMaker extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabel4MouseClicked
 
     private void dinnerListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dinnerListMouseClicked
-        // TODO add your handling code here:
+        // dinner field clicked
         clearFields();
+        bldButtonPressed = true;
         setActive(dinnerRadioBtn, dinnerMenu, dinnerModel, dinnerList);
         int tmp = dinnerList.getSelectedIndex();
         if (tmp > -1) {
@@ -1229,12 +1233,14 @@ public class MenuMaker extends javax.swing.JFrame {
     private void lunchListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lunchListMouseClicked
         // TODO add your handling code here:
         clearFields();
+        bldButtonPressed = true;
         setActive(lunchRadioBtn, lunchMenu, lunchModel, lunchList);
     }//GEN-LAST:event_lunchListMouseClicked
 
     private void breakfastListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_breakfastListMouseClicked
         // breakfast list was clicked
         clearFields();
+        bldButtonPressed = true;
         setActive(breakfastRadioBtn, breakfastMenu, breakfastModel, breakfastList);
     }//GEN-LAST:event_breakfastListMouseClicked
 
@@ -1283,6 +1289,10 @@ public class MenuMaker extends javax.swing.JFrame {
         clearMenu(dinnerMenu, dinnerModel, dinnerList, 2);
         quantitySpinner.setEnabled(false);
     }//GEN-LAST:event_jButton11MouseClicked
+
+    private void dinnerListMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dinnerListMouseEntered
+        // TODO add your handling code here:
+    }//GEN-LAST:event_dinnerListMouseEntered
 
     /**
      * @param args the command line arguments

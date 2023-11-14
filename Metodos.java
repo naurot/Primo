@@ -1,6 +1,7 @@
 package my.contacteditor;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -93,4 +94,88 @@ public class Metodos<T> {
         return list;
     }
 
+    public void createRecipe(DishType d, ArrayList<UsedIngredientType> i) {
+        // create dish (in Dish table), then...
+        // create entry in consists_of table
+
+        try {
+            System.out.println("create Recipe (new dish)");
+            String query;
+            String quote = "'";
+            conn = db.getConnection();
+            stmt = conn.createStatement();
+            query = "INSERT INTO dish VALUES (null,"
+                    + quote + d.name + quote + ","
+                    + d.mealType + ","
+                    + d.dishType + ","
+                    + d.numServings + ")";
+//            System.out.println("query: " + query);
+//            stmt.executeUpdate(query);
+//            rs = stmt.executeQuery("select last_insert_id() as last_id");
+            PreparedStatement pstmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            pstmt.executeUpdate();
+            ResultSet keys = pstmt.getGeneratedKeys();
+            keys.next();
+            int lastID = keys.getInt(1);
+//            String lastID = rs.getString("last_id");
+            // use last_insert_id() to get dish_id
+            System.out.println("id = " + lastID);
+            for (UsedIngredientType u : i) {
+                query = "INSERT INTO consists_of VALUES ("
+                        + lastID + ","
+                        + u.id + ","
+                        + u.brandID + ","
+                        + quote + u.brandName + quote + ","
+                        + u.amount + ","
+                        + u.units + ")";
+                System.out.println("query: " + query);
+                stmt.executeUpdate(query);
+            }
+        } catch (SQLException sqle) {
+            System.out.println(sqle);
+        }
+    }
+
+    public void updateRecipe(DishType d, ArrayList<UsedIngredientType> i) {
+        // delete dish_id (in consists_of table), then...
+        // create entry in consists_of table
+        //TODO: allow dish to be update by dish parameters too
+        try {
+            System.out.println("Update Recipe");
+            String query;
+            String quote = "'";
+            conn = db.getConnection();
+            stmt = conn.createStatement();
+            query = "DELETE FROM consists_of where dish_id = " + d.id;
+            stmt.executeUpdate(query);
+            for (UsedIngredientType u : i) {
+                query = "INSERT INTO consists_of VALUES ("
+                        + d.id + ","
+                        + u.id + ","
+                        + u.brandID + ","
+                        + quote + u.brandName + quote + ","
+                        + u.amount + ","
+                        + u.units + ")";
+                System.out.println("update query: " + query);
+                stmt.executeUpdate(query);
+            }
+        } catch (SQLException sqle) {
+            System.out.println(sqle);
+        }
+    }
+
+    public void deleteDish(int dishID) {
+        try {
+            String query;
+            System.out.println("Delete Recipe: ID# " + dishID);
+            conn = db.getConnection();
+            stmt = conn.createStatement();
+            query = "DELETE  FROM consists_of WHERE Dish_ID = " + dishID;
+            stmt.executeUpdate(query);
+            query = "DELETE FROM dish WHERE ID = " + dishID;
+            stmt.executeUpdate(query);
+        } catch (SQLException sqle) {
+            System.out.println(sqle);
+        }
+    }
 }

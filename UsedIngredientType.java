@@ -14,11 +14,12 @@ public class UsedIngredientType extends IngredientType{
     
     public UsedIngredientType(){};
     
-    public UsedIngredientType(String name, String amount, String units){
-        this.name = name;
+    public UsedIngredientType(IngredientType ing, String amount, String units){
+        super(ing);
         this.amount = amount;
         this.units= units;
     }
+    
     public String toString(){
         return amount + " " + units + " " + name.strip();
     }

@@ -9,11 +9,21 @@ package my.contacteditor;
  * @author 14107
  */
 public class IngredientType {
+
     int id;
     String name;
     int brandID;
     String brandName;
-    
-    public IngredientType(){};
-    
+
+    public IngredientType() {
+    }
+
+    ;
+    public IngredientType(IngredientType ing) {
+        id = ing.id;
+        name = ing.name;
+        brandID = ing.brandID;
+        brandName = ing.brandName;
+    }
+
 }
