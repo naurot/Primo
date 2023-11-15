@@ -1,10 +1,13 @@
 package my.contacteditor;
 
 import java.sql.Connection;
+import java.util.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import javax.swing.*;
 
@@ -165,6 +168,7 @@ public class Metodos<T> {
     }
 
     public void deleteDish(int dishID) {
+        //check to see if dish in menu?
         try {
             String query;
             System.out.println("Delete Recipe: ID# " + dishID);
@@ -176,6 +180,42 @@ public class Metodos<T> {
             stmt.executeUpdate(query);
         } catch (SQLException sqle) {
             System.out.println(sqle);
+        }
+    }
+
+    public void addMenu(String d, int meal, ArrayList<MenuDishType> menu) {
+        //add date and meal to menu table
+        //loop through menu and...
+        //add date, meal, dishID, and quantity to has table
+        String query;
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+
+        try {
+            java.util.Date dateStr = sdf.parse(d);
+            java.sql.Date dateDB = new java.sql.Date(dateStr.getTime());
+
+            conn = db.getConnection();
+            try {
+                stmt = conn.createStatement();
+                query = "INSERT INTO menu VALUES ("
+                        + "'" +  dateDB + "'" + ","
+                        + meal + ")";
+                System.out.println("addMenu, query1: " + query);
+                stmt.executeUpdate(query);
+                for (MenuDishType dish : menu) {
+                    query = "INSERT INTO has VALUES ("
+                            + "'" + dateDB + "'" + ","
+                            + meal + ","
+                            + dish.id + ","
+                            + dish.quantity + ")";
+                    System.out.println("addMenu, query2: " + query);
+                    stmt.executeUpdate(query);
+                }
+            } catch (SQLException sqle) {
+                System.out.println("Error: " + sqle);
+            }
+        } catch (ParseException e) {
+            System.out.println(e);
         }
     }
 }

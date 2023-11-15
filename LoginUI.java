@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import javax.swing.JFrame;
 
 /**
  *
@@ -233,7 +234,13 @@ public class LoginUI extends javax.swing.JFrame {
             }
             // Step 4: Close the connection
             conn.close();
-            System.out.println("role:" + role);
+//            System.out.println("role:" + role);
+            //goto the homepage for user
+            //set not visible
+            switch (role){
+                case 1: JFrame jfr = new JFrame('AdminUI');
+                jfr.show();
+            }
         } catch (ClassNotFoundException e) {
             System.out.println("JDBC driver not found!");
             e.printStackTrace();

@@ -10,33 +10,38 @@ import java.util.Date;
  *
  * @author 14107
  */
-public class MenuDishType extends DishType{
+public class MenuDishType extends DishType {
+
     Date date;
     int meal;
     int quantity;
     private int totalServings;
-    public MenuDishType(){};
+
+    public MenuDishType() {
+    }
+
+    ;
     
-   public MenuDishType(Date date, int meal, DishType dish, int quantity){
-       super(dish);
-       this.date = date;
-       this.meal = meal;
-       this.quantity = quantity;
-   }
-    
-    public String toString(){
+   public MenuDishType(Date date, int meal, DishType dish, int quantity) {
+        super(dish);
+        this.date = date;
+        this.meal = meal;
+        this.quantity = quantity;
+    }
+
+    public String toString() {
         return quantity + " " + name;
     }
-    
-    public int getNumServings(){
+
+    public int getNumServings() {
         return numServings;
     }
-    
-    public int getTotalServings(){
+
+    public int getTotalServings() {
         return quantity * numServings;
     }
-    
-    public void setQuantity(int quantity){
+
+    public void setQuantity(int quantity) {
 //        this.quantity = quantity;
-    }    
+    }
 }

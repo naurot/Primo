@@ -32,6 +32,9 @@ public class MenuMaker extends javax.swing.JFrame {
     ArrayList<String> menuDates = new ArrayList<>();
     SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
     boolean bldButtonPressed = false;
+    public static final int BREAKFAST = 1;
+    public static final int LUNCH = 2;
+    public static final int DINNER = 4;
 
     /**
      * Creates new form SecondTestUI
@@ -55,6 +58,10 @@ public class MenuMaker extends javax.swing.JFrame {
         setList(breakfastMenu, breakfastList, breakfastModel);
         setList(lunchMenu, lunchList, lunchModel);
         setList(dinnerMenu, dinnerList, dinnerModel);
+
+        enum Meal {
+            breakfast, lunch, dinner
+        };
 
         dishTypeCount.add(breakfastApps);
         dishTypeCount.add(breakfastSides);
@@ -888,6 +895,11 @@ public class MenuMaker extends javax.swing.JFrame {
 
         jButton1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jButton1.setText("Logout");
+        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton1MouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel14Layout = new javax.swing.GroupLayout(jPanel14);
         jPanel14.setLayout(jPanel14Layout);
@@ -1262,6 +1274,11 @@ public class MenuMaker extends javax.swing.JFrame {
             System.out.println("\t" + breakfastMenu.get(i));
         }
         System.out.println("-----------------------------------------------------");
+
+        //add to menu
+        //add to contains with dishID and quantity
+        metodos.addMenu((String) dateSpinner.getValue(), BREAKFAST, breakfastMenu);
+
         clearMenu(breakfastMenu, breakfastModel, breakfastList, 0);
     }//GEN-LAST:event_jButton2MouseClicked
 
@@ -1274,6 +1291,9 @@ public class MenuMaker extends javax.swing.JFrame {
             System.out.println("\t" + lunchMenu.get(i));
         }
         System.out.println("-----------------------------------------------------");
+        
+        metodos.addMenu((String) dateSpinner.getValue(), LUNCH, lunchMenu);
+
         clearMenu(lunchMenu, lunchModel, lunchList, 1);
     }//GEN-LAST:event_jButton10MouseClicked
 
@@ -1287,12 +1307,21 @@ public class MenuMaker extends javax.swing.JFrame {
         }
         System.out.println("-----------------------------------------------------");
         clearMenu(dinnerMenu, dinnerModel, dinnerList, 2);
+
+        metodos.addMenu((String) dateSpinner.getValue(), DINNER, dinnerMenu);
+
         quantitySpinner.setEnabled(false);
     }//GEN-LAST:event_jButton11MouseClicked
 
     private void dinnerListMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dinnerListMouseEntered
         // TODO add your handling code here:
     }//GEN-LAST:event_dinnerListMouseEntered
+
+    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
+        // TODO add your handling code here:
+        setVisible(false);
+        dispose();
+    }//GEN-LAST:event_jButton1MouseClicked
 
     /**
      * @param args the command line arguments
