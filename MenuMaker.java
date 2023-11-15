@@ -1318,7 +1318,9 @@ public class MenuMaker extends javax.swing.JFrame {
     }//GEN-LAST:event_dinnerListMouseEntered
 
     private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
-        // TODO add your handling code here:
+        // logout clicked
+        LoginUI loginUI = new LoginUI();
+        loginUI.setVisible(true);
         setVisible(false);
         dispose();
     }//GEN-LAST:event_jButton1MouseClicked

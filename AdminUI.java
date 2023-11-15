@@ -4,6 +4,10 @@
  */
 package my.contacteditor;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author 14107
@@ -13,8 +17,31 @@ public class AdminUI extends javax.swing.JFrame {
     /**
      * Creates new form AdminUI
      */
+    Metodos metodos = new Metodos();
+
+    public static final int IGNORE = 0;
+    public static final int CREATE = 1;
+    public static final int UPDATE = 2;
+    public static final int DELETE = 3;
+    private static int action = IGNORE;
+    String[][] data;
+    int rowIndex = -1;
+
     public AdminUI() {
         initComponents();
+        popTable();
+        jTable1.setRowSelectionAllowed(false);
+        cancelBtn.setVisible(false);
+        submitBtn.setVisible(false);
+    }
+
+    public void popTable() {
+        String[] headings = {"User", "Password", "Role", "Last Logged In"};
+        data = metodos.popAdminTable();
+
+        DefaultTableModel model = new DefaultTableModel(data, headings);
+        jTable1.setModel(model);
+
     }
 
     /**
@@ -32,9 +59,12 @@ public class AdminUI extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jComboBox1 = new javax.swing.JComboBox<>();
         jButton1 = new javax.swing.JButton();
+        cancelBtn = new javax.swing.JButton();
+        submitBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Admininstrator");
+        setResizable(false);
 
         jPanel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
 
@@ -65,56 +95,98 @@ public class AdminUI extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        jTable1.setRowHeight(30);
         jTable1.getTableHeader().setReorderingAllowed(false);
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable1MouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
 
-        jComboBox1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBox1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Observe", "Create User", "Update User", "Remove User" }));
+        jComboBox1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jComboBox1MouseClicked(evt);
+            }
+        });
+        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox1ActionPerformed(evt);
+            }
+        });
 
         jButton1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jButton1.setText("Logout");
+        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton1MouseClicked(evt);
+            }
+        });
+
+        cancelBtn.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        cancelBtn.setText("Cancel");
+        cancelBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                cancelBtnMouseClicked(evt);
+            }
+        });
+
+        submitBtn.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        submitBtn.setText("Submit");
+        submitBtn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                submitBtnMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1))
-                .addContainerGap(129, Short.MAX_VALUE))
+                .addContainerGap(273, Short.MAX_VALUE)
+                .addComponent(cancelBtn)
+                .addGap(18, 18, 18)
+                .addComponent(submitBtn)
+                .addGap(138, 138, 138)
+                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(28, 28, 28)
+                .addComponent(jButton1)
+                .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jButton1)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cancelBtn)
+                    .addComponent(submitBtn)
+                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton1))
+                .addGap(20, 20, 20))
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGap(6, 6, 6)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 990, Short.MAX_VALUE)
-                .addContainerGap())
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 990, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 770, Short.MAX_VALUE)
-                .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(657, 657, 657))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 410, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(18, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -123,19 +195,147 @@ public class AdminUI extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
+        // mouse clicked logout btn
+        LoginUI loginUI = new LoginUI();
+        loginUI.setVisible(true);
+        setVisible(false);
+        dispose();
+    }//GEN-LAST:event_jButton1MouseClicked
+
+    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
+        // TODO add your handling code here:
+        switch (jComboBox1.getSelectedIndex()) {
+            case 0: //observe
+                setAction(IGNORE);
+                jComboBox1.setEnabled(true);
+                jTable1.setRowSelectionAllowed(false);
+                jTable1.setEnabled(false);
+                cancelBtn.setVisible(false);
+                submitBtn.setVisible(false);
+                break;
+            case 1: //create
+                setAction(CREATE);
+                jComboBox1.setEnabled(false);
+                jTable1.setRowSelectionAllowed(true);
+                jTable1.setEnabled(true);
+                cancelBtn.setVisible(true);
+                submitBtn.setVisible(true);
+                break;
+            case 2: //update either role or password
+                setAction(UPDATE);
+                jComboBox1.setEnabled(false);
+                jTable1.setRowSelectionAllowed(true);
+                jTable1.setEnabled(true);
+                cancelBtn.setVisible(true);
+                submitBtn.setVisible(true);
+                break;
+            case 3: //delete
+                setAction(DELETE);
+                jTable1.setEnabled(true);
+                break;
+        }
+    }//GEN-LAST:event_jComboBox1ActionPerformed
+
+    private void jComboBox1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jComboBox1MouseClicked
+        // combo box selected
+
+    }//GEN-LAST:event_jComboBox1MouseClicked
+
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+        // TODO add your handling code here:
+        //mouse clicked on table, check action
+        if (getAction() == IGNORE) {
+            return;
+        }
+        if (getAction() == DELETE) {
+            int rowIndex = jTable1.getSelectedRow();
+            String name = data[rowIndex][0];
+            String password = data[rowIndex][1];
+            String query = "DELETE FROM password where name like '"
+                    + name + "' and password like '" + password + "'";
+            System.out.println("Delete: " + query);
+            metodos.adminUI(query);
+            popTable();
+        }
+        if (getAction() == CREATE) {
+            //show submit button and cancel button
+            if (rowIndex == -1) {
+                rowIndex = jTable1.getSelectedRow();
+            } else {
+// i don't think anything should be done here
+            }
+        }
+        if (getAction() == UPDATE) {
+            if (rowIndex == -1) {
+                rowIndex = jTable1.getSelectedRow();
+            }
+        }
+    }//GEN-LAST:event_jTable1MouseClicked
+
+    private void cancelBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cancelBtnMouseClicked
+        // cancel button clicked during create or update
+        jComboBox1.setSelectedIndex(0);
+    }//GEN-LAST:event_cancelBtnMouseClicked
+
+    private void submitBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_submitBtnMouseClicked
+        // submit button clicked
+        if (getAction() == CREATE) {
+            if (rowIndex == -1) {
+                return;
+            } else {
+                String name = data[rowIndex][0];
+                String password = data[rowIndex][1];
+                int role = Integer.parseInt(data[rowIndex][2]);
+                String date = data[rowIndex][3];
+                if (name.equals("") || password.equals("") || role < 1 || role > 4) {
+                    System.out.println("Incomplete/Incorrect");
+                } else {
+                    String query = "INSERT INTO password VALUES ('"
+                            + name + "','"
+                            + password + "',"
+                            + role + ")";
+                    metodos.adminUI(query);
+                    jComboBox1.setSelectedIndex(0);
+                    rowIndex = -1;
+                }
+            }
+
+        } else { //getAction = update
+            if (rowIndex == -1) {
+                return;
+            } else {
+                String name = data[rowIndex][0];
+                String password = data[rowIndex][1];
+                int role = Integer.parseInt(data[rowIndex][2]);
+                String date = data[rowIndex][3];
+                if (name.equals("") || password.equals("") || role < 1 || role > 4) {
+                    System.out.println("Incomplete/Incorrect");
+                } else {
+                    String query = "INSERT INTO password VALUES ('"
+                            + name + "','"
+                            + password + "',"
+                            + role + ")";
+                    metodos.adminUI(query);
+                    jComboBox1.setSelectedIndex(0);
+                    rowIndex = -1;
+                }
+            }
+    }//GEN-LAST:event_submitBtnMouseClicked
+    }
 
     /**
      * @param args the command line arguments
@@ -173,11 +373,21 @@ public class AdminUI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton cancelBtn;
     private javax.swing.JButton jButton1;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
+    private javax.swing.JButton submitBtn;
     // End of variables declaration//GEN-END:variables
+
+    public void setAction(int a) {
+        action = a;
+    }
+
+    public int getAction() {
+        return action;
+    }
 }

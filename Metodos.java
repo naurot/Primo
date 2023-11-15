@@ -218,4 +218,36 @@ public class Metodos<T> {
             System.out.println(e);
         }
     }
+    
+    public String[][] popAdminTable(){
+        String[][] retValue = new String[100][4];
+        int index = 0;
+        String query;
+        conn = db.getConnection();
+        try{
+            stmt = conn.createStatement();
+            query = "SELECT * FROM password";
+            rs = stmt.executeQuery(query);
+            while (rs.next()){
+                retValue[index][0] = rs.getString("name");
+                retValue[index][1] = rs.getString("password");
+                retValue[index][2] = rs.getString("role");
+                retValue[index++][3] = rs.getDate("last").toString();
+            }
+        } catch (SQLException sqle) {
+            System.out.println("Error: " + sqle);
+        }
+        return retValue;
+    }
+    
+    public void adminUI(String query){
+        System.out.println("AdminUI query: " + query);
+        conn = db.getConnection();
+        try{
+            stmt = conn.createStatement();
+            stmt.executeUpdate(query);
+        }catch(SQLException sqle){
+            System.out.println("Error: " + sqle);
+        }
+    }
 }

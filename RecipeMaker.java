@@ -896,6 +896,8 @@ public class RecipeMaker extends javax.swing.JFrame {
 
     private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
         // mouse clicked logout
+        LoginUI loginUI = new LoginUI();
+        loginUI.setVisible(true);
         setVisible(false);
         dispose();
     }//GEN-LAST:event_jButton1MouseClicked
