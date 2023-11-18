@@ -19,8 +19,6 @@ public class MenuDishType extends DishType {
 
     public MenuDishType() {
     }
-
-    ;
     
    public MenuDishType(Date date, int meal, DishType dish, int quantity) {
         super(dish);

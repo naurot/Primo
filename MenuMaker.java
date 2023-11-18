@@ -8,7 +8,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.*;
 import java.util.Date;
@@ -32,6 +34,7 @@ public class MenuMaker extends javax.swing.JFrame {
     ArrayList<String> menuDates = new ArrayList<>();
     SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
     boolean bldButtonPressed = false;
+    public static final int IGNORE = 0;
     public static final int BREAKFAST = 1;
     public static final int LUNCH = 2;
     public static final int DINNER = 4;
@@ -55,14 +58,13 @@ public class MenuMaker extends javax.swing.JFrame {
         dishList = metodos.fillDataList(new DishType(), "select * from dish ORDER BY Name");
 
         setDishList(dishList, recipeList, dishModel);
-        setList(breakfastMenu, breakfastList, breakfastModel);
-        setList(lunchMenu, lunchList, lunchModel);
-        setList(dinnerMenu, dinnerList, dinnerModel);
+        setList(breakfastMenu, breakfastList, breakfastModel, BREAKFAST);
+        setList(lunchMenu, lunchList, lunchModel, LUNCH);
+        setList(dinnerMenu, dinnerList, dinnerModel, DINNER);
 
 //        enum Meal {
 //            breakfast, lunch, dinner
 //        };
-
         dishTypeCount.add(breakfastApps);
         dishTypeCount.add(breakfastSides);
         dishTypeCount.add(breakfastMain);
@@ -1118,7 +1120,7 @@ public class MenuMaker extends javax.swing.JFrame {
                     placeDishInEditor(activeMenu, dish.id);
                     activeMenu.removeIf(elem -> elem.id == dish.id);
                     activeModel.clear();
-                    setList(activeMenu, activeList, activeModel);
+                    setList(activeMenu, activeList, activeModel, IGNORE);
                 }
 //            bldButtonPressed = true;
 //            breakfastRadioBtn.doClick(500);
@@ -1235,11 +1237,7 @@ public class MenuMaker extends javax.swing.JFrame {
     private void jButton4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton4MouseClicked
         //clear lunch menu
         clearMenu(lunchMenu, lunchModel, lunchList, 1);
-        //
-        //        lunchMenu.clear();
-        //        lunchModel.clear();
-        //        lunchList.setModel(lunchModel);
-        //        clearMealServingCounts();
+
     }//GEN-LAST:event_jButton4MouseClicked
 
     private void lunchListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lunchListMouseClicked
@@ -1280,6 +1278,7 @@ public class MenuMaker extends javax.swing.JFrame {
         metodos.addMenu((String) dateSpinner.getValue(), BREAKFAST, breakfastMenu);
 
         clearMenu(breakfastMenu, breakfastModel, breakfastList, 0);
+
     }//GEN-LAST:event_jButton2MouseClicked
 
     private void jButton10MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton10MouseClicked
@@ -1291,7 +1290,7 @@ public class MenuMaker extends javax.swing.JFrame {
             System.out.println("\t" + lunchMenu.get(i));
         }
         System.out.println("-----------------------------------------------------");
-        
+
         metodos.addMenu((String) dateSpinner.getValue(), LUNCH, lunchMenu);
 
         clearMenu(lunchMenu, lunchModel, lunchList, 1);
@@ -1309,7 +1308,7 @@ public class MenuMaker extends javax.swing.JFrame {
 
         metodos.addMenu((String) dateSpinner.getValue(), DINNER, dinnerMenu);
 
-        clearMenu(dinnerMenu, dinnerModel, dinnerList, 1);
+        clearMenu(dinnerMenu, dinnerModel, dinnerList, 2);
     }//GEN-LAST:event_jButton11MouseClicked
 
     private void dinnerListMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dinnerListMouseEntered
@@ -1326,7 +1325,9 @@ public class MenuMaker extends javax.swing.JFrame {
 
     private void dateSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_dateSpinnerStateChanged
         // spinner data state changed. load data for this date
-        
+        setList(breakfastMenu, breakfastList, breakfastModel, BREAKFAST);
+        setList(lunchMenu, lunchList, lunchModel, LUNCH);
+        setList(dinnerMenu, dinnerList, dinnerModel, DINNER);
     }//GEN-LAST:event_dateSpinnerStateChanged
 
     /**
@@ -1468,8 +1469,17 @@ public class MenuMaker extends javax.swing.JFrame {
     private javax.swing.JTextField recipeTextField;
     // End of variables declaration//GEN-END:variables
 
-    private void setList(ArrayList<MenuDishType> list, JList<String> jList, DefaultListModel model) {
+    private void setList(ArrayList<MenuDishType> list, JList<String> jList, DefaultListModel model, int meal) {
         System.out.println("In setList");
+        if (meal > 0) {
+            try {
+                java.sql.Date date = (java.sql.Date) sdf.parse(dateSpinner.getValue().toString());
+                String query = "select * from has inner join dish on dish_id = id where date='" + date + "' and meal = " + meal;
+                list = metodos.fillDataList(new MenuDishType(), query);
+            } catch (ParseException e) {
+                System.out.println("error: " + e);
+            }
+        }
         for (MenuDishType dish : list) {
             model.addElement(dish.quantity + " " + dish.name);
 //            model.addElement(dish.quantity * dish.numServings + " " + dish.name);

@@ -49,6 +49,32 @@ public class Metodos<T> {
         }
         return list;
     }
+    
+        public ArrayList<MenuDishType> fillDataList(MenuDishType t, String query) {
+        ArrayList<MenuDishType> list = new ArrayList<>();
+        try {
+            System.out.println("MenuDishType");
+            MenuDishType tmp;
+            conn = db.getConnection();
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                tmp = new MenuDishType();
+                tmp.id = rs.getInt("ID");
+                tmp.name = rs.getString("Name");
+                tmp.mealType = rs.getInt("MealType");
+                tmp.dishType = rs.getInt("DishType");
+                tmp.numServings = rs.getInt("NumServings");
+                tmp.date = rs.getDate("Date");
+                tmp.meal = rs.getInt("Meal");
+                tmp.quantity = rs.getInt("DishQuantity");
+                list.add(tmp);
+            }
+        } catch (SQLException sqle) {
+            System.out.println(sqle);
+        }
+        return list;
+    }
 
     public ArrayList<IngredientType> fillDataList(IngredientType t, String query) {
         ArrayList<IngredientType> list = new ArrayList<>();
@@ -98,6 +124,8 @@ public class Metodos<T> {
         }
         return list;
     }
+    
+
 
     public void createRecipe(DishType d, ArrayList<UsedIngredientType> i) {
         // create dish (in Dish table), then...
