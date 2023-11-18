@@ -59,9 +59,9 @@ public class MenuMaker extends javax.swing.JFrame {
         setList(lunchMenu, lunchList, lunchModel);
         setList(dinnerMenu, dinnerList, dinnerModel);
 
-        enum Meal {
-            breakfast, lunch, dinner
-        };
+//        enum Meal {
+//            breakfast, lunch, dinner
+//        };
 
         dishTypeCount.add(breakfastApps);
         dishTypeCount.add(breakfastSides);
@@ -184,6 +184,11 @@ public class MenuMaker extends javax.swing.JFrame {
 
         dateSpinner.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         dateSpinner.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        dateSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                dateSpinnerStateChanged(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -1318,6 +1323,11 @@ public class MenuMaker extends javax.swing.JFrame {
         setVisible(false);
         dispose();
     }//GEN-LAST:event_jButton1MouseClicked
+
+    private void dateSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_dateSpinnerStateChanged
+        // spinner data state changed. load data for this date
+        
+    }//GEN-LAST:event_dateSpinnerStateChanged
 
     /**
      * @param args the command line arguments

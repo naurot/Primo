@@ -76,7 +76,7 @@ public class Metodos<T> {
     public ArrayList<UsedIngredientType> fillDataList(UsedIngredientType t, String query) {
         ArrayList<UsedIngredientType> list = new ArrayList<>();
         try {
-            System.out.println("Ingredient Type");
+            System.out.println("UsedIngredient Type");
             UsedIngredientType tmp;
             conn = db.getConnection();
             stmt = conn.createStatement();
@@ -87,6 +87,7 @@ public class Metodos<T> {
                 tmp.name = rs.getString("Name");
                 tmp.brandID = rs.getInt("Brand_ID");
                 tmp.brandName = rs.getString("Brand_Name");
+                tmp.type = rs.getInt("Type");
                 tmp.amount = rs.getString("Quantity");
                 tmp.units = rs.getString("Units");
                 System.out.println("Units: " + tmp.units);
@@ -130,6 +131,7 @@ public class Metodos<T> {
                         + u.id + ","
                         + u.brandID + ","
                         + quote + u.brandName + quote + ","
+                        + u.type + ","
                         + u.amount + ","
                         + u.units + ")";
                 System.out.println("query: " + query);
@@ -158,6 +160,7 @@ public class Metodos<T> {
                         + u.id + ","
                         + u.brandID + ","
                         + quote + u.brandName + quote + ","
+                        + u.type + ","
                         + u.amount + ","
                         + u.units + ")";
                 System.out.println("update query: " + query);
@@ -199,7 +202,7 @@ public class Metodos<T> {
             try {
                 stmt = conn.createStatement();
                 query = "INSERT INTO menu VALUES ("
-                        + "'" +  dateDB + "'" + ","
+                        + "'" + dateDB + "'" + ","
                         + meal + ")";
                 System.out.println("addMenu, query1: " + query);
                 stmt.executeUpdate(query);
@@ -219,17 +222,17 @@ public class Metodos<T> {
             System.out.println(e);
         }
     }
-    
-    public String[][] popAdminTable(){
+
+    public String[][] popAdminTable() {
         String[][] retValue = new String[100][4];
         int index = 0;
         String query;
         conn = db.getConnection();
-        try{
+        try {
             stmt = conn.createStatement();
             query = "SELECT * FROM password";
             rs = stmt.executeQuery(query);
-            while (rs.next()){
+            while (rs.next()) {
                 retValue[index][0] = rs.getString("name");
                 retValue[index][1] = rs.getString("password");
                 retValue[index][2] = rs.getString("role");
@@ -240,14 +243,14 @@ public class Metodos<T> {
         }
         return retValue;
     }
-    
-    public void adminUI(String query){
+
+    public void adminUI(String query) {
         System.out.println("AdminUI query: " + query);
         conn = db.getConnection();
-        try{
+        try {
             stmt = conn.createStatement();
             stmt.executeUpdate(query);
-        }catch(SQLException sqle){
+        } catch (SQLException sqle) {
             System.out.println("Error: " + sqle);
         }
     }

@@ -15,13 +15,14 @@ import javax.swing.JList;
 public class RecipeMaker extends javax.swing.JFrame {
 
     Metodos metodos = new Metodos();
-    final String[] indUnits = {"each", "dozen"};
-    final String[] dryUnits = {"dash","tsp","tsps","Tbs","ounce","ounces","cup","cups","lb","lbs"};
-    final String[] wetUnits = {"splash","tsp","tsps","Tbs","ounce","ounces","cup","cups","pint","pints","quart","quart"};
-    String[] units;
+
     static int dishID = -1;
     static int ingListIdx = -1;
 
+    final String[][] unit = {{"each", "dozen"},
+                               {"dash", "tsp", "tsps", "Tbs", "ounce", "ounces", "cup", "cups", "lb", "lbs"},
+                               {"splash", "tsp", "tsps", "Tbs", "ounce", "ounces", "cup", "cups", "pint", "pints", "quart", "quart"}};
+String[] units = unit[2];
     /**
      * Creates new form RecipeMaker
      */
@@ -696,6 +697,7 @@ public class RecipeMaker extends javax.swing.JFrame {
             if (createRecipeBtn.isSelected()) {
                 //creating new recipe; selected ingredient; put ingredient in edit box
                 setIngListIdx(ingOrDishList.getSelectedIndex());
+                units = unit[ingredientList.get(getIngListIdx()).type];
                 System.out.println("Editing: " + ingredientList.get(getIngListIdx()).name);
                 String selectedItem = ingOrDishList.getSelectedValue();
                 //if the ingredient is already in accepted list,

@@ -339,7 +339,7 @@ public class Inventory extends javax.swing.JFrame {
     public void popIngTable() {
         String[] headings = {"Ingredient", "Quantity", "Consuming/Day", "# Days", "Order"};
 //        data = metodos.popIngTable();
-
+//select * from ingredients left join inventory on id=ingID sum(quantity)
         DefaultTableModel model = new DefaultTableModel(data, headings);
         jTable1.setModel(model);
     }
