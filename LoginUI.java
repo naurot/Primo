@@ -4,10 +4,16 @@
  */
 package my.contacteditor;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.sql.Connection;
+import java.util.Date;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import javax.swing.JFrame;
 
 /**
@@ -19,6 +25,8 @@ public class LoginUI extends javax.swing.JFrame {
     /**
      * Creates new form LoginUI
      */
+    Metodos metodos = new Metodos();
+
     public LoginUI() {
         initComponents();
     }
@@ -43,6 +51,8 @@ public class LoginUI extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setLocation(new java.awt.Point(700, 400));
+        setResizable(false);
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Login"));
 
@@ -208,50 +218,75 @@ public class LoginUI extends javax.swing.JFrame {
 //            stmt = conn.createStatement();
             String userName = jTextField1.getText();
             String userPassword = String.valueOf(jPasswordField1.getPassword());
-            int role = 0;
-            String query = "SELECT role FROM primo.password where primo.password.name='" + userName + "' and primo.password.password='" + userPassword + "';";
-            System.out.println("query: \n\t" + query);
-            rs = conn.createStatement().executeQuery(query);
-            while (rs.next()) {
+
+//    //***************************************************************
+//    byte[] salt = getSalt();
+//    String pass1 = getSecurePassword(userPassword, salt);
+////********************************************************************
+    int role = 0;
+    String query = "SELECT role FROM primo.password where primo.password.name='" + userName + "' and primo.password.password='" + userPassword + "';";
+
+    System.out.println (
+    "query: \n\t" + query);
+            rs  = conn.createStatement().executeQuery(query);
+
+    while (rs.next () 
+        ) {
                 role = Integer.parseInt(rs.getString(1));
-                System.out.println(rs.getString(1));
-            }
-            // Step 4: Close the connection
-            conn.close();
-//            System.out.println("role:" + role);
-            //goto the homepage for user
-            //set not visible
-            JFrame jfr = new JFrame();
-            switch (role) {
-                case 1 -> {
-                    //adminUI
-                    AdminUI adminUI = new AdminUI();
-                    adminUI.setVisible(true);
-                    setVisible(false);
-                    dispose();
-                }
-                case 2 -> {
-                    MenuMaker menuMaker = new MenuMaker();
-                    menuMaker.setVisible(true);
-                    setVisible(false);
-                    dispose();
-                }
-                case 3 -> {
-                    RecipeMaker recipeMaker = new RecipeMaker();
-                    recipeMaker.setVisible(true);
-                    setVisible(false);
-                    dispose();
-                }
-                case 4 -> {
-                    Inventory inventory = new Inventory();
-                    inventory.setVisible(true);
-                    setVisible(false);
-                    dispose();
-                }
-            }
-            //RecipeMaker
+        System.out.println(rs.getString(1));
+    }
+    String date;
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    date  = sdf.format(new Date());
+    query  = "UPDATE password SET "
+            + "name = '" + userName + "',"
+            + "password = '" + userPassword + "',"
+            + "role = " + role + ","
+            + "last = '" + date + "' "
+            + "WHERE name = '" + userName
+            + "' and password = '" + userPassword + "'";
+
+    metodos.adminUI (query);
+
+    conn.close ();
+
+    switch (role) {
+        case 1 -> {
+            //adminUI
+            AdminUI adminUI = new AdminUI();
+            adminUI.setVisible(true);
+            setVisible(false);
+            dispose();
+        }
+
+        case 2 -> {
+            MenuMaker menuMaker = new MenuMaker();
+            menuMaker.setVisible(true);
+            setVisible(false);
+            dispose();
+        }
+
+        case 3 -> {
+            RecipeMaker recipeMaker = new RecipeMaker();
+            recipeMaker.setVisible(true);
+            setVisible(false);
+            dispose();
+        }
+
+        case 4 -> {
+            Inventory inventory = new Inventory();
+            inventory.setVisible(true);
+            setVisible(false);
+            dispose();
+        }
+
+        default ->
+            dispose();
+    } //RecipeMaker
             //Inventory/PO/Invoice/Cooking
-                    } catch (ClassNotFoundException e) {
+
+}
+catch (ClassNotFoundException e) {
             System.out.println("JDBC driver not found!");
             e.printStackTrace();
         } catch (SQLException e) {
@@ -280,16 +315,28 @@ public class LoginUI extends javax.swing.JFrame {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
-                }
+
+}
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(LoginUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(LoginUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(LoginUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(LoginUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LoginUI.class  
+
+.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
+} catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(LoginUI.class  
+
+.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
+} catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(LoginUI.class  
+
+.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
+} catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(LoginUI.class  
+
+.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
@@ -314,4 +361,32 @@ public class LoginUI extends javax.swing.JFrame {
     private javax.swing.JPasswordField jPasswordField1;
     private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
+
+            // *********************************       
+    public static String getSecurePassword(String password, byte[] salt) {
+
+        String generatedPassword = null;
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-512");
+            md.update(salt);
+            byte[] bytes = md.digest(password.getBytes(StandardCharsets.UTF_8));
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < bytes.length; i++) {
+                sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+            }
+            generatedPassword = sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return generatedPassword;
+    }
+
+    private static byte[] getSalt() throws NoSuchAlgorithmException {
+        SecureRandom random = new SecureRandom();
+        byte[] salt = new byte[16];
+        random.nextBytes(salt);
+        return salt;
+    }
+    //***************************************************************
+
 }
