@@ -29,10 +29,7 @@ public class AdminUI extends javax.swing.JFrame {
 
     public AdminUI() {
         initComponents();
-        popTable();
-        jTable1.setRowSelectionAllowed(false);
-        cancelBtn.setVisible(false);
-        submitBtn.setVisible(false);
+        jComboBox1.setSelectedIndex(0);
     }
 
     public void popTable() {
@@ -41,7 +38,6 @@ public class AdminUI extends javax.swing.JFrame {
 
         DefaultTableModel model = new DefaultTableModel(data, headings);
         jTable1.setModel(model);
-
     }
 
     /**
@@ -226,6 +222,8 @@ public class AdminUI extends javax.swing.JFrame {
                 jTable1.setEnabled(false);
                 cancelBtn.setVisible(false);
                 submitBtn.setVisible(false);
+                rowIndex = -1;
+                popTable();
                 break;
             case 1: //create
                 setAction(CREATE);
@@ -271,18 +269,9 @@ public class AdminUI extends javax.swing.JFrame {
             metodos.adminUI(query);
             popTable();
         }
-        if (getAction() == CREATE) {
+        if (getAction() == CREATE || getAction() == UPDATE) {
             //show submit button and cancel button
-            if (rowIndex == -1) {
                 rowIndex = jTable1.getSelectedRow();
-            } else {
-// i don't think anything should be done here
-            }
-        }
-        if (getAction() == UPDATE) {
-            if (rowIndex == -1) {
-                rowIndex = jTable1.getSelectedRow();
-            }
         }
     }//GEN-LAST:event_jTable1MouseClicked
 
@@ -297,41 +286,41 @@ public class AdminUI extends javax.swing.JFrame {
             if (rowIndex == -1) {
                 return;
             } else {
-                String name = data[rowIndex][0];
-                String password = data[rowIndex][1];
-                int role = Integer.parseInt(data[rowIndex][2]);
-                String date = data[rowIndex][3];
+                String name = jTable1.getValueAt(rowIndex,0).toString();
+                String password = jTable1.getValueAt(rowIndex,1).toString();
+                int role = Integer.parseInt(jTable1.getValueAt(rowIndex,2).toString());
                 if (name.equals("") || password.equals("") || role < 1 || role > 4) {
                     System.out.println("Incomplete/Incorrect");
                 } else {
                     String query = "INSERT INTO password VALUES ('"
                             + name + "','"
                             + password + "',"
-                            + role + ")";
+                            + role + ",'2000-01-01')";
                     metodos.adminUI(query);
                     jComboBox1.setSelectedIndex(0);
-                    rowIndex = -1;
                 }
             }
-
         } else { //getAction = update
             if (rowIndex == -1) {
                 return;
             } else {
-                String name = data[rowIndex][0];
-                String password = data[rowIndex][1];
-                int role = Integer.parseInt(data[rowIndex][2]);
-                String date = data[rowIndex][3];
+                String name = jTable1.getValueAt(rowIndex,0).toString();
+                String password = jTable1.getValueAt(rowIndex,1).toString();
+                int role = Integer.parseInt(jTable1.getValueAt(rowIndex,2).toString());
+                String date = jTable1.getValueAt(rowIndex, 3).toString();
                 if (name.equals("") || password.equals("") || role < 1 || role > 4) {
                     System.out.println("Incomplete/Incorrect");
                 } else {
-                    String query = "INSERT INTO password VALUES ('"
-                            + name + "','"
-                            + password + "',"
-                            + role + ")";
+                    String query = "UPDATE password SET "
+                            + "name = '" + name + "',"
+                            + "password = '" + password + "',"
+                            + "role = " + role + ","
+                            + "last = '" + date + "' "
+                            + "WHERE name = '" + data[rowIndex][0]
+                            + "' and password = '" + data[rowIndex][1] + "'";
+                    
                     metodos.adminUI(query);
                     jComboBox1.setSelectedIndex(0);
-                    rowIndex = -1;
                 }
             }
     }//GEN-LAST:event_submitBtnMouseClicked
