@@ -64,6 +64,7 @@ public class Metodos<T> {
                 tmp.name = rs.getString("Name");
                 tmp.brandID = rs.getInt("Brand_ID");
                 tmp.brandName = rs.getString("Brand_Name");
+                tmp.type = rs.getInt("Type");
                 list.add(tmp);
             }
         } catch (SQLException sqle) {

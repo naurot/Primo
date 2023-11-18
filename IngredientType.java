@@ -14,6 +14,7 @@ public class IngredientType {
     String name;
     int brandID;
     String brandName;
+    int type;
 
     public IngredientType() {
     }
@@ -24,6 +25,7 @@ public class IngredientType {
         name = ing.name;
         brandID = ing.brandID;
         brandName = ing.brandName;
+        type = ing.type;
     }
 
 }

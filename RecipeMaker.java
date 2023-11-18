@@ -15,8 +15,10 @@ import javax.swing.JList;
 public class RecipeMaker extends javax.swing.JFrame {
 
     Metodos metodos = new Metodos();
-    String[] units = {"1", "2", "3", "4", "5"};
-//    String[] units = {"ounce", "ounces", "lb", "lbs", "tsp", "Tbs", "cup", "cups", "pint", "pints", "quart", "quarts", "gal", "gals", "dash"};
+    final String[] indUnits = {"each", "dozen"};
+    final String[] dryUnits = {"dash","tsp","tsps","Tbs","ounce","ounces","cup","cups","lb","lbs"};
+    final String[] wetUnits = {"splash","tsp","tsps","Tbs","ounce","ounces","cup","cups","pint","pints","quart","quart"};
+    String[] units;
     static int dishID = -1;
     static int ingListIdx = -1;
 

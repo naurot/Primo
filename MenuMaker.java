@@ -1301,11 +1301,10 @@ public class MenuMaker extends javax.swing.JFrame {
             System.out.println("\t" + dinnerMenu.get(i));
         }
         System.out.println("-----------------------------------------------------");
-        clearMenu(dinnerMenu, dinnerModel, dinnerList, 2);
 
         metodos.addMenu((String) dateSpinner.getValue(), DINNER, dinnerMenu);
 
-        quantitySpinner.setEnabled(false);
+        clearMenu(dinnerMenu, dinnerModel, dinnerList, 1);
     }//GEN-LAST:event_jButton11MouseClicked
 
     private void dinnerListMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dinnerListMouseEntered
