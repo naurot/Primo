@@ -22,6 +22,7 @@ import javax.swing.*;
  */
 public class Metodos<T> {
 
+    static SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
     Database db = new Database();
     Connection conn = null;
     Statement stmt = null;
@@ -49,8 +50,8 @@ public class Metodos<T> {
         }
         return list;
     }
-    
-        public ArrayList<MenuDishType> fillDataList(MenuDishType t, String query) {
+
+    public ArrayList<MenuDishType> fillDataList(MenuDishType t, String query) {
         ArrayList<MenuDishType> list = new ArrayList<>();
         try {
             System.out.println("MenuDishType");
@@ -124,8 +125,6 @@ public class Metodos<T> {
         }
         return list;
     }
-    
-
 
     public void createRecipe(DishType d, ArrayList<UsedIngredientType> i) {
         // create dish (in Dish table), then...
@@ -220,7 +219,6 @@ public class Metodos<T> {
         //loop through menu and...
         //add date, meal, dishID, and quantity to has table
         String query;
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
 
         try {
             java.util.Date dateStr = sdf.parse(d);
@@ -229,19 +227,41 @@ public class Metodos<T> {
             conn = db.getConnection();
             try {
                 stmt = conn.createStatement();
-                query = "INSERT INTO menu VALUES ("
-                        + "'" + dateDB + "'" + ","
-                        + meal + ")";
-                System.out.println("addMenu, query1: " + query);
-                stmt.executeUpdate(query);
-                for (MenuDishType dish : menu) {
-                    query = "INSERT INTO has VALUES ("
-                            + "'" + dateDB + "'" + ","
-                            + meal + ","
-                            + dish.id + ","
-                            + dish.quantity + ")";
-                    System.out.println("addMenu, query2: " + query);
+                try {
+                    query = "DELETE FROM has WHERE date='" + dateDB + "' and meal=" + meal;
+                    System.out.println("query: " + query);
                     stmt.executeUpdate(query);
+                } catch (SQLException f) {
+                    System.out.println("SQLError: " + f);
+                }
+                try {
+                    query = "DELETE FROM menu WHERE date='" + dateDB + "' and meal=" + meal;
+                    System.out.println("query: " + query);
+                    stmt.executeUpdate(query);
+                } catch (SQLException f) {
+                    System.out.println("SQLException: " + f);
+                }
+                try {
+                    query = "INSERT INTO menu VALUES ("
+                            + "'" + dateDB + "'" + ","
+                            + meal + ")";
+                    System.out.println("addMenu, query1: " + query);
+                    stmt.executeUpdate(query);
+                } catch (SQLException f) {
+                    System.out.println("SQLException: " + f);
+                }
+                try {
+                    for (MenuDishType dish : menu) {
+                        query = "INSERT INTO has VALUES ("
+                                + "'" + dateDB + "'" + ","
+                                + meal + ","
+                                + dish.id + ","
+                                + dish.quantity + ")";
+                        System.out.println("addMenu, query2: " + query);
+                        stmt.executeUpdate(query);
+                    }
+                } catch (SQLException f) {
+                    System.out.println("SQLException: " + f);
                 }
             } catch (SQLException sqle) {
                 System.out.println("Error: " + sqle);

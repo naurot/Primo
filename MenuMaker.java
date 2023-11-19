@@ -58,9 +58,9 @@ public class MenuMaker extends javax.swing.JFrame {
         dishList = metodos.fillDataList(new DishType(), "select * from dish ORDER BY Name");
 
         setDishList(dishList, recipeList, dishModel);
-        setList(breakfastMenu, breakfastList, breakfastModel, BREAKFAST);
-        setList(lunchMenu, lunchList, lunchModel, LUNCH);
-        setList(dinnerMenu, dinnerList, dinnerModel, DINNER);
+        setList(breakfastMenu, breakfastModel, breakfastList, BREAKFAST);
+        setList(lunchMenu, lunchModel, lunchList, LUNCH);
+        setList(dinnerMenu, dinnerModel, dinnerList, DINNER);
 
 //        enum Meal {
 //            breakfast, lunch, dinner
@@ -168,6 +168,8 @@ public class MenuMaker extends javax.swing.JFrame {
         jRadioButton3 = new javax.swing.JRadioButton();
         jRadioButton4 = new javax.swing.JRadioButton();
         jButton1 = new javax.swing.JButton();
+        jLabel17 = new javax.swing.JLabel();
+        servingsNum = new javax.swing.JLabel();
         jScrollPane4 = new javax.swing.JScrollPane();
         recipeList = new javax.swing.JList<>();
 
@@ -813,7 +815,8 @@ public class MenuMaker extends javax.swing.JFrame {
         numServingsTextField.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
 
         jLabel28.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jLabel28.setText("Servings");
+        jLabel28.setText("Servings/Recipe");
+        jLabel28.setToolTipText("");
 
         jLabel29.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel29.setText("Recipe");
@@ -908,6 +911,16 @@ public class MenuMaker extends javax.swing.JFrame {
             }
         });
 
+        jLabel17.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel17.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel17.setText("Total Servings");
+        jLabel17.setToolTipText("");
+
+        servingsNum.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        servingsNum.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        servingsNum.setText("0");
+        servingsNum.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+
         javax.swing.GroupLayout jPanel14Layout = new javax.swing.GroupLayout(jPanel14);
         jPanel14.setLayout(jPanel14Layout);
         jPanel14Layout.setHorizontalGroup(
@@ -921,21 +934,27 @@ public class MenuMaker extends javax.swing.JFrame {
                             .addComponent(jRadioButton3)
                             .addComponent(jRadioButton4)
                             .addComponent(jRadioButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
-                        .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(cancelDishBtn)
-                            .addComponent(jLabel28))
-                        .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(jPanel14Layout.createSequentialGroup()
-                                .addGap(32, 32, 32)
+                                .addComponent(cancelDishBtn)
+                                .addGap(107, 107, 107))
+                            .addGroup(jPanel14Layout.createSequentialGroup()
+                                .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel28, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel17, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(18, 18, 18)))
+                        .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(jPanel14Layout.createSequentialGroup()
+                                .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(numServingsTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 67, Short.MAX_VALUE)
+                                    .addComponent(servingsNum, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(quantitySpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel14Layout.createSequentialGroup()
                                 .addComponent(addDishBtn)
                                 .addGap(18, 18, 18)
-                                .addComponent(jButton1))
-                            .addGroup(jPanel14Layout.createSequentialGroup()
-                                .addGap(20, 20, 20)
-                                .addComponent(numServingsTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(quantitySpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(jButton1)))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(dinnerRadioBtn)
@@ -958,34 +977,37 @@ public class MenuMaker extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel14Layout.createSequentialGroup()
-                        .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(jPanel14Layout.createSequentialGroup()
-                                .addGap(5, 5, 5)
-                                .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel28)
-                                    .addComponent(numServingsTextField)
-                                    .addComponent(quantitySpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addComponent(jRadioButton1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel14Layout.createSequentialGroup()
+                                        .addGap(12, 12, 12)
+                                        .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                            .addComponent(jLabel28)
+                                            .addComponent(servingsNum)))
+                                    .addComponent(jRadioButton1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jRadioButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jLabel17)
+                                .addComponent(numServingsTextField)
+                                .addComponent(quantitySpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jRadioButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel14Layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jRadioButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jRadioButton4))
-                            .addGroup(jPanel14Layout.createSequentialGroup()
-                                .addGap(23, 23, 23)
-                                .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(cancelDishBtn)
-                                    .addComponent(addDishBtn)
-                                    .addComponent(jButton1)))))
+                        .addComponent(jRadioButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jRadioButton4))
                     .addGroup(jPanel14Layout.createSequentialGroup()
                         .addComponent(breakfastRadioBtn)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(lunchRadioBtn)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(dinnerRadioBtn)))
+                        .addComponent(dinnerRadioBtn))
+                    .addGroup(jPanel14Layout.createSequentialGroup()
+                        .addGap(111, 111, 111)
+                        .addGroup(jPanel14Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(cancelDishBtn)
+                            .addComponent(addDishBtn)
+                            .addComponent(jButton1))))
                 .addGap(96, 96, 96))
         );
 
@@ -1114,13 +1136,14 @@ public class MenuMaker extends javax.swing.JFrame {
                 index = recipeList.getSelectedIndex();
                 DishType dish = dishList.get(index);
                 recipeTextField.setText(dish.name);
-                numServingsTextField.setText("" + dish.numServings);
+                servingsNum.setText("" + dish.numServings);
+//                numServingsTextField.setText("" + dish.numServings);
                 setDishType(dish);
                 if (duplicateDish(activeMenu, dish.id)) {
                     placeDishInEditor(activeMenu, dish.id);
                     activeMenu.removeIf(elem -> elem.id == dish.id);
                     activeModel.clear();
-                    setList(activeMenu, activeList, activeModel, IGNORE);
+                    setList(activeMenu, activeModel, activeList, IGNORE);
                 }
 //            bldButtonPressed = true;
 //            breakfastRadioBtn.doClick(500);
@@ -1179,7 +1202,7 @@ public class MenuMaker extends javax.swing.JFrame {
     }//GEN-LAST:event_cancelDishBtnMouseClicked
 
     private void addDishBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addDishBtnMouseClicked
-        // TODO add your handling code here:
+        // adding dish to menu
         if (!recipeTextField.getText().equals("") && (int) quantitySpinner.getValue() > 0) {
 //            Date date = (Date) dateSpinner.getValue();
             try {
@@ -1216,7 +1239,8 @@ public class MenuMaker extends javax.swing.JFrame {
 
     private void jButton5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton5MouseClicked
         //clear dinner menu
-        clearMenu(dinnerMenu, dinnerModel, dinnerList, 2);
+        clearMenu(dinnerMenu, dinnerModel, dinnerList, DINNER);
+        setList(dinnerMenu, dinnerModel, dinnerList, DINNER);
     }//GEN-LAST:event_jButton5MouseClicked
 
     private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked
@@ -1228,16 +1252,15 @@ public class MenuMaker extends javax.swing.JFrame {
         clearFields();
         bldButtonPressed = true;
         setActive(dinnerRadioBtn, dinnerMenu, dinnerModel, dinnerList);
-        int tmp = dinnerList.getSelectedIndex();
-        if (tmp > -1) {
+        {
 
         }
     }//GEN-LAST:event_dinnerListMouseClicked
 
     private void jButton4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton4MouseClicked
         //clear lunch menu
-        clearMenu(lunchMenu, lunchModel, lunchList, 1);
-
+        clearMenu(lunchMenu, lunchModel, lunchList, LUNCH);
+        setList(lunchMenu, lunchModel, lunchList, LUNCH);
     }//GEN-LAST:event_jButton4MouseClicked
 
     private void lunchListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lunchListMouseClicked
@@ -1249,14 +1272,38 @@ public class MenuMaker extends javax.swing.JFrame {
 
     private void breakfastListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_breakfastListMouseClicked
         // breakfast list was clicked
-        clearFields();
+//  TODO      clearFields();
         bldButtonPressed = true;
         setActive(breakfastRadioBtn, breakfastMenu, breakfastModel, breakfastList);
+        if (recipeTextField.getText().equals("")) {
+
+            index = activeList.getSelectedIndex();
+            if (index >= 0) {
+                quantitySpinner.setEnabled(true);
+                System.out.println("Break " + breakfastMenu.size());
+//            MenuDishType tmp = activeMenu.get(index);
+//            recipeTextField.setText(tmp.name);
+//            servingsNum.setText("" + tmp.numServings);
+//            setDishType(tmp);
+            }
+        }
+        //*********************************************
+//        if (recipeTextField.getText().equals("")) {
+//            quantitySpinner.setEnabled(true);
+//            index = recipeList.getSelectedIndex();
+//            DishType dish = dishList.get(index);
+//            recipeTextField.setText(dish.name);
+//            servingsNum.setText("" + dish.numServings);
+//                numServingsTextField.setText("" + dish.numServings);
+//            setDishType(dish);
+//        }
+        //**********************************************
     }//GEN-LAST:event_breakfastListMouseClicked
 
     private void jButton3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton3MouseClicked
         //clear breakfast menu list
-        clearMenu(breakfastMenu, breakfastModel, breakfastList, 0);
+        clearMenu(breakfastMenu, breakfastModel, breakfastList, BREAKFAST);
+        setList(breakfastMenu, breakfastModel, breakfastList, BREAKFAST);
     }//GEN-LAST:event_jButton3MouseClicked
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
@@ -1277,7 +1324,8 @@ public class MenuMaker extends javax.swing.JFrame {
         //add to contains with dishID and quantity
         metodos.addMenu((String) dateSpinner.getValue(), BREAKFAST, breakfastMenu);
 
-        clearMenu(breakfastMenu, breakfastModel, breakfastList, 0);
+        clearMenu(breakfastMenu, breakfastModel, breakfastList, BREAKFAST);
+        setList(breakfastMenu, breakfastModel, breakfastList, BREAKFAST);
 
     }//GEN-LAST:event_jButton2MouseClicked
 
@@ -1293,7 +1341,8 @@ public class MenuMaker extends javax.swing.JFrame {
 
         metodos.addMenu((String) dateSpinner.getValue(), LUNCH, lunchMenu);
 
-        clearMenu(lunchMenu, lunchModel, lunchList, 1);
+        clearMenu(lunchMenu, lunchModel, lunchList, LUNCH);
+        setList(lunchMenu, lunchModel, lunchList, LUNCH);
     }//GEN-LAST:event_jButton10MouseClicked
 
     private void jButton11MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton11MouseClicked
@@ -1308,7 +1357,8 @@ public class MenuMaker extends javax.swing.JFrame {
 
         metodos.addMenu((String) dateSpinner.getValue(), DINNER, dinnerMenu);
 
-        clearMenu(dinnerMenu, dinnerModel, dinnerList, 2);
+        clearMenu(dinnerMenu, dinnerModel, dinnerList, DINNER);
+        setList(dinnerMenu, dinnerModel, dinnerList, DINNER);
     }//GEN-LAST:event_jButton11MouseClicked
 
     private void dinnerListMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dinnerListMouseEntered
@@ -1325,9 +1375,9 @@ public class MenuMaker extends javax.swing.JFrame {
 
     private void dateSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_dateSpinnerStateChanged
         // spinner data state changed. load data for this date
-        setList(breakfastMenu, breakfastList, breakfastModel, BREAKFAST);
-        setList(lunchMenu, lunchList, lunchModel, LUNCH);
-        setList(dinnerMenu, dinnerList, dinnerModel, DINNER);
+        setList(breakfastMenu, breakfastModel, breakfastList, BREAKFAST);
+        setList(lunchMenu, lunchModel, lunchList, LUNCH);
+        setList(dinnerMenu, dinnerModel, dinnerList, DINNER);
     }//GEN-LAST:event_dateSpinnerStateChanged
 
     /**
@@ -1417,6 +1467,7 @@ public class MenuMaker extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel24;
@@ -1467,14 +1518,18 @@ public class MenuMaker extends javax.swing.JFrame {
     private javax.swing.JSpinner quantitySpinner;
     private javax.swing.JList<String> recipeList;
     private javax.swing.JTextField recipeTextField;
+    private javax.swing.JLabel servingsNum;
     // End of variables declaration//GEN-END:variables
 
-    private void setList(ArrayList<MenuDishType> list, JList<String> jList, DefaultListModel model, int meal) {
-        System.out.println("In setList");
+    private void setList(ArrayList<MenuDishType> list, DefaultListModel model, JList<String> jList, int meal) {
+        model.clear();
+        System.out.println("In setList, list is " + (list.isEmpty() ? "Empty" : "Contains something"));
         if (meal > 0) {
             try {
-                java.sql.Date date = (java.sql.Date) sdf.parse(dateSpinner.getValue().toString());
+                SimpleDateFormat sqf = new SimpleDateFormat("yyyy-MM-dd");
+                String date = sqf.format(sdf.parse(dateSpinner.getValue().toString()));
                 String query = "select * from has inner join dish on dish_id = id where date='" + date + "' and meal = " + meal;
+                System.out.println("query: " + query);
                 list = metodos.fillDataList(new MenuDishType(), query);
             } catch (ParseException e) {
                 System.out.println("error: " + e);
@@ -1482,7 +1537,6 @@ public class MenuMaker extends javax.swing.JFrame {
         }
         for (MenuDishType dish : list) {
             model.addElement(dish.quantity + " " + dish.name);
-//            model.addElement(dish.quantity * dish.numServings + " " + dish.name);
         }
         jList.setModel(model);
     }
@@ -1507,6 +1561,7 @@ public class MenuMaker extends javax.swing.JFrame {
     private void clearFields() {
         recipeTextField.setText("");
         numServingsTextField.setText("0");
+        servingsNum.setText("0");
         quantitySpinner.setValue(0);
     }
 
@@ -1545,27 +1600,15 @@ public class MenuMaker extends javax.swing.JFrame {
         switch (dish.dishType) {
             case 1 -> {
                 jRadioButton1.setSelected(true);
-//                jRadioButton2.setSelected(false);
-//                jRadioButton3.setSelected(false);
-//                jRadioButton4.setSelected(false);
             }
             case 2 -> {
-//                jRadioButton1.setSelected(false);
                 jRadioButton2.setSelected(true);
-//                jRadioButton3.setSelected(false);
-//                jRadioButton4.setSelected(false);
 
             }
             case 3 -> {
-//                jRadioButton1.setSelected(false);
-//                jRadioButton2.setSelected(false);
                 jRadioButton3.setSelected(true);
-//                jRadioButton4.setSelected(false);
             }
             case 4 -> {
-//                jRadioButton1.setSelected(false);
-//                jRadioButton2.setSelected(false);
-//                jRadioButton3.setSelected(false);
                 jRadioButton4.setSelected(true);
             }
         }
@@ -1580,12 +1623,11 @@ public class MenuMaker extends javax.swing.JFrame {
         dishTypeCount.get(index).setText("" + (tmp + count));
     }
 
-    private int getActiveNormalMenu() {
-        int menu = getActiveMenu();
-        if (menu == 4) {
-            return menu - 2;
+    private int getNormalizedMeal(int meal) {
+        if (meal == 4) {
+            return meal - 2;
         } else {
-            return menu - 1;
+            return meal - 1;
         }
     }
 
@@ -1595,10 +1637,12 @@ public class MenuMaker extends javax.swing.JFrame {
         }
     }
 
-    private void clearMenu(ArrayList<MenuDishType> menu, DefaultListModel model, JList<String> list, int clearBtn) {
-        menu.clear();
+    private void clearMenu(ArrayList<MenuDishType> menu, DefaultListModel model, JList<String> list, int meal) {
+//        menu.clear();
         model.clear();
         list.setModel(model);
-        clearMealServingCounts(clearBtn);
+        clearMealServingCounts(getNormalizedMeal(meal));
+        // nead to repopulate from database
+        setList(menu, model, list, meal);
     }
 }
