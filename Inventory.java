@@ -5,6 +5,7 @@
 package my.contacteditor;
 
 import java.util.ArrayList;
+import java.util.Vector;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -17,7 +18,8 @@ public class Inventory extends javax.swing.JFrame {
      * Creates new form Inventory
      */
     Metodos metodos;
-    String[][] data;
+    static ArrayList<TableType> data = new ArrayList<>();
+
     public Inventory() {
         initComponents();
         popIngTable();
@@ -180,6 +182,11 @@ public class Inventory extends javax.swing.JFrame {
         );
 
         jButton3.setText("Logout");
+        jButton3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton3MouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -280,6 +287,14 @@ public class Inventory extends javax.swing.JFrame {
         // clicked row in ingredient table
     }//GEN-LAST:event_jTable1MouseClicked
 
+    private void jButton3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton3MouseClicked
+        // logout clicked
+        LoginUI loginUI = new LoginUI();
+        loginUI.setVisible(true);
+        setVisible(false);
+        dispose();
+    }//GEN-LAST:event_jButton3MouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -338,17 +353,18 @@ public class Inventory extends javax.swing.JFrame {
 
     public void popIngTable() {
         String[] headings = {"Ingredient", "Quantity", "Consuming/Day", "# Days", "Order"};
-//        data = metodos.popIngTable();
+        data = metodos.popIngTable();
 //select * from ingredients left join inventory on id=ingID sum(quantity)
-        DefaultTableModel model = new DefaultTableModel(data, headings);
+
+        DefaultTableModel model = new DefaultTableModel(data,data.size());
         jTable1.setModel(model);
     }
 
-        public void popLocTable() {
-        String[] headings = {"Ingredient","Location","Purchase Order","Date","Vendor"};
+    public void popLocTable() {
+        String[] headings = {"Ingredient", "Location", "Purchase Order", "Date", "Vendor"};
 //        data = metodos.popIngTable();
 
-        DefaultTableModel model = new DefaultTableModel(data, headings);
-        jTable2.setModel(model);
+//        DefaultTableModel model = new DefaultTableModel(data, headings);
+//        jTable2.setModel(model);
     }
 }
