@@ -304,4 +304,35 @@ public class Metodos<T> {
             System.out.println("Error: " + sqle);
         }
     }
+
+    public ArrayList<TableType> popIngTable() {
+        ArrayList<TableType> retVal = new ArrayList<>();
+        String query;
+        conn = db.getConnection();
+        try {
+            stmt = conn.createStatement();
+//            SELECT * FROM ((inventory natural join stocks)  right join suppliedby on purchaseorder = po and vendor_id = sb_vendor_id);
+            query = "SELECT * FROM ingredient left join (SELECT id, name, brand_id, brand_name, SUM(quantity) as Total from inventory group by id, brand_id, brand_name) on ingredient.id = inventory.ing_id)";
+            query = "select i.id,name,i.brand_id,i.brand_name,type,date,po,sb_vendor_id, suppliedquantity,size,suppliedunits,cost from ingredient i left join suppliedby s on i.id=s.id and i.brand_id=s.brand_id and i.brand_name=s.brand_name";
+            rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                retVal.add(new TableType(rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getInt("brand_id"),
+                        rs.getString("brand_name"),
+                        rs.getInt("type"),
+                        rs.getDate("date"),
+                        rs.getInt("po"),
+                        rs.getInt("sb_vendor_id"),
+                        rs.getInt("suppliedQuantity"),
+                        rs.getInt("size"),
+                        rs.getInt("suppliedUnits"),
+                        rs.getBigDecimal("cost")));
+
+            }
+        } catch (SQLException sqle) {
+            System.out.println("SQLException: " + sqle);
+        }
+        return retVal;
+    }
 }
