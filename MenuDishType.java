@@ -26,6 +26,13 @@ public class MenuDishType extends DishType {
         this.meal = meal;
         this.quantity = quantity;
     }
+   
+   public MenuDishType(MenuDishType item){
+       super(item);
+       this.date = item.date;
+       this.meal = item.meal;
+       this.quantity = item.quantity;
+   }
 
     public String toString() {
         return quantity + " " + name;

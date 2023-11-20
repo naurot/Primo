@@ -241,27 +241,29 @@ public class Metodos<T> {
                 } catch (SQLException f) {
                     System.out.println("SQLException: " + f);
                 }
-                try {
-                    query = "INSERT INTO menu VALUES ("
-                            + "'" + dateDB + "'" + ","
-                            + meal + ")";
-                    System.out.println("addMenu, query1: " + query);
-                    stmt.executeUpdate(query);
-                } catch (SQLException f) {
-                    System.out.println("SQLException: " + f);
-                }
-                try {
-                    for (MenuDishType dish : menu) {
-                        query = "INSERT INTO has VALUES ("
+                if (!menu.isEmpty()) {
+                    try {
+                        query = "INSERT INTO menu VALUES ("
                                 + "'" + dateDB + "'" + ","
-                                + meal + ","
-                                + dish.id + ","
-                                + dish.quantity + ")";
-                        System.out.println("addMenu, query2: " + query);
+                                + meal + ")";
+                        System.out.println("addMenu, query1: " + query);
                         stmt.executeUpdate(query);
+                    } catch (SQLException f) {
+                        System.out.println("SQLException: " + f);
                     }
-                } catch (SQLException f) {
-                    System.out.println("SQLException: " + f);
+                    try {
+                        for (MenuDishType dish : menu) {
+                            query = "INSERT INTO has VALUES ("
+                                    + "'" + dateDB + "'" + ","
+                                    + meal + ","
+                                    + dish.id + ","
+                                    + dish.quantity + ")";
+                            System.out.println("addMenu, query2: " + query);
+                            stmt.executeUpdate(query);
+                        }
+                    } catch (SQLException f) {
+                        System.out.println("SQLException: " + f);
+                    }
                 }
             } catch (SQLException sqle) {
                 System.out.println("Error: " + sqle);

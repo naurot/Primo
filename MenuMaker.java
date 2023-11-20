@@ -38,19 +38,15 @@ public class MenuMaker extends javax.swing.JFrame {
     public static final int BREAKFAST = 1;
     public static final int LUNCH = 2;
     public static final int DINNER = 4;
+    public static MenuDishType recipeTmp;
+    static ArrayList<MenuDishType> activeMenu;
 
     /**
      * Creates new form SecondTestUI
      */
     @SuppressWarnings("empty-statement")
     public MenuMaker() {
-        Date menuDate = new Date();
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(menuDate);
-        for (int i = 0; i < 14; i++) {
-            menuDates.add(sdf.format(cal.getTime()));
-            cal.add(Calendar.DATE, 1);
-        }
+        Calendar cal = setDateSpinnerValues();
 
         initComponents();
 
@@ -58,13 +54,7 @@ public class MenuMaker extends javax.swing.JFrame {
         dishList = metodos.fillDataList(new DishType(), "select * from dish ORDER BY Name");
 
         setDishList(dishList, recipeList, dishModel);
-        setList(breakfastMenu, breakfastModel, breakfastList, BREAKFAST);
-        setList(lunchMenu, lunchModel, lunchList, LUNCH);
-        setList(dinnerMenu, dinnerModel, dinnerList, DINNER);
 
-//        enum Meal {
-//            breakfast, lunch, dinner
-//        };
         dishTypeCount.add(breakfastApps);
         dishTypeCount.add(breakfastSides);
         dishTypeCount.add(breakfastMain);
@@ -77,6 +67,12 @@ public class MenuMaker extends javax.swing.JFrame {
         dishTypeCount.add(dinnerSides);
         dishTypeCount.add(dinnerMain);
         dishTypeCount.add(dinnerDessert);
+
+        breakfastMenu = setList(breakfastMenu, breakfastModel, breakfastList, BREAKFAST);
+        lunchMenu = setList(lunchMenu, lunchModel, lunchList, LUNCH);
+        dinnerMenu = setList(dinnerMenu, dinnerModel, dinnerList, DINNER);
+
+//        updateDishTypeCount();
     }
 
     /**
@@ -1129,7 +1125,7 @@ public class MenuMaker extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void recipeListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_recipeListMouseClicked
-        // recipe clicked - addd to active menu;
+        // recipe clicked from list - addd to active menu;
         if (bldButtonPressed) {
             if (recipeTextField.getText().equals("")) {
                 quantitySpinner.setEnabled(true);
@@ -1137,36 +1133,24 @@ public class MenuMaker extends javax.swing.JFrame {
                 DishType dish = dishList.get(index);
                 recipeTextField.setText(dish.name);
                 servingsNum.setText("" + dish.numServings);
-//                numServingsTextField.setText("" + dish.numServings);
+
                 setDishType(dish);
-                if (duplicateDish(activeMenu, dish.id)) {
-                    placeDishInEditor(activeMenu, dish.id);
-                    activeMenu.removeIf(elem -> elem.id == dish.id);
+                recipeTmp = new MenuDishType(getDateFromSpinner(), getActiveMenu(), dish, 0);
+
+                int dupIdx = duplicateDish(activeMenu, dish.id);
+                if (dupIdx >= 0) {
+                    recipeTmp.quantity = activeMenu.get(dupIdx).quantity;
+                    quantitySpinner.setValue(recipeTmp.quantity);
+                    numServingsTextField.setText("" + (recipeTmp.numServings * recipeTmp.quantity));
+                    activeMenu.remove(dupIdx);
                     activeModel.clear();
-                    setList(activeMenu, activeModel, activeList, IGNORE);
+                    for (MenuDishType item : activeMenu) {
+                        activeModel.addElement(item.toString());
+                    }
+                    activeList.setModel(activeModel);
+                    updateDishTypeCount();
                 }
-//            bldButtonPressed = true;
-//            breakfastRadioBtn.doClick(500);
             }
-            //            int mask = getActiveMenu();
-            //            int countIdx = 0;
-            //            DishType tmp;
-            //            for (int i = 0; i < dishList.size(); i++) {
-            //                tmp = dishList.get(i);
-            //                if ((tmp.mealType ^ mask) < tmp.mealType) {
-            //                    if (countIdx == index) {
-            //                        index = i;
-            //                        if (dishList.get(i).name.equals(recipeList.getSelectedValue())) {
-            //                            System.out.println("in agreement");
-            //                        }
-            //                        i = dishList.size();
-            //                    }
-            //                        countIdx++;
-            //
-            //                }
-            //            }
-            //            System.out.println("dish: " + dishList.get(index).name);
-            //            mmRecipeTextField.setText(recipeList.getSelectedValue());
         }
     }//GEN-LAST:event_recipeListMouseClicked
 
@@ -1204,22 +1188,13 @@ public class MenuMaker extends javax.swing.JFrame {
     private void addDishBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addDishBtnMouseClicked
         // adding dish to menu
         if (!recipeTextField.getText().equals("") && (int) quantitySpinner.getValue() > 0) {
-//            Date date = (Date) dateSpinner.getValue();
-            try {
-                Date date = sdf.parse(dateSpinner.getValue().toString());
-                int meal = getActiveMenu();
-                int quantity = (int) quantitySpinner.getValue();
-                System.out.println("data: " + date + ", " + meal + ", " + quantity + ", " + dishList.get(index).name);
-                updateDishTypeCount(getActiveMenu(), dishList.get(index).dishType, quantity * dishList.get(index).numServings);
-                MenuDishType tmp = new MenuDishType(date, meal, dishList.get(index), quantity);
-                activeMenu.add(tmp);
-                activeModel.addElement(tmp.toString());
-                activeList.setModel(activeModel);
-            } catch (Exception pe) {
-                System.out.println("Error: " + pe);
-            }
+            recipeTmp.quantity = (int) quantitySpinner.getValue();
+            System.out.println("data: " + recipeTmp.date + ", " + recipeTmp.meal + ", " + recipeTmp.quantity + ", " + recipeTmp.name);
+            activeMenu.add(recipeTmp);
+            activeModel.addElement(recipeTmp.toString());
+            activeList.setModel(activeModel);
             clearFields();
-            quantitySpinner.setEnabled(false);
+            updateDishTypeCount();
         }
     }//GEN-LAST:event_addDishBtnMouseClicked
 
@@ -1229,18 +1204,18 @@ public class MenuMaker extends javax.swing.JFrame {
 
     private void quantitySpinnerMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_quantitySpinnerMouseClicked
         // TODO add your handling code here:
-        numServingsTextField.setText("" + ((int) quantitySpinner.getValue() * dishList.get(index).numServings));
+        numServingsTextField.setText("" + ((int) quantitySpinner.getValue() * Integer.parseInt(servingsNum.getText())));
     }//GEN-LAST:event_quantitySpinnerMouseClicked
 
     private void quantitySpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_quantitySpinnerStateChanged
         // TODO add your handling code here:
-        numServingsTextField.setText("" + ((int) quantitySpinner.getValue() * dishList.get(index).numServings));
+        numServingsTextField.setText("" + ((int) quantitySpinner.getValue() * Integer.parseInt(servingsNum.getText())));
     }//GEN-LAST:event_quantitySpinnerStateChanged
 
     private void jButton5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton5MouseClicked
         //clear dinner menu
         clearMenu(dinnerMenu, dinnerModel, dinnerList, DINNER);
-        setList(dinnerMenu, dinnerModel, dinnerList, DINNER);
+        dinnerMenu = setList(dinnerMenu, dinnerModel, dinnerList, DINNER);
     }//GEN-LAST:event_jButton5MouseClicked
 
     private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked
@@ -1249,61 +1224,32 @@ public class MenuMaker extends javax.swing.JFrame {
 
     private void dinnerListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dinnerListMouseClicked
         // dinner field clicked
-        clearFields();
-        bldButtonPressed = true;
         setActive(dinnerRadioBtn, dinnerMenu, dinnerModel, dinnerList);
-        {
-
-        }
+        processMenuItemClicked();
     }//GEN-LAST:event_dinnerListMouseClicked
 
     private void jButton4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton4MouseClicked
         //clear lunch menu
         clearMenu(lunchMenu, lunchModel, lunchList, LUNCH);
-        setList(lunchMenu, lunchModel, lunchList, LUNCH);
+        lunchMenu = setList(lunchMenu, lunchModel, lunchList, LUNCH);
     }//GEN-LAST:event_jButton4MouseClicked
 
     private void lunchListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lunchListMouseClicked
         // TODO add your handling code here:
-        clearFields();
-        bldButtonPressed = true;
         setActive(lunchRadioBtn, lunchMenu, lunchModel, lunchList);
+        processMenuItemClicked();
     }//GEN-LAST:event_lunchListMouseClicked
 
     private void breakfastListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_breakfastListMouseClicked
         // breakfast list was clicked
-//  TODO      clearFields();
-        bldButtonPressed = true;
         setActive(breakfastRadioBtn, breakfastMenu, breakfastModel, breakfastList);
-        if (recipeTextField.getText().equals("")) {
-
-            index = activeList.getSelectedIndex();
-            if (index >= 0) {
-                quantitySpinner.setEnabled(true);
-                System.out.println("Break " + breakfastMenu.size());
-//            MenuDishType tmp = activeMenu.get(index);
-//            recipeTextField.setText(tmp.name);
-//            servingsNum.setText("" + tmp.numServings);
-//            setDishType(tmp);
-            }
-        }
-        //*********************************************
-//        if (recipeTextField.getText().equals("")) {
-//            quantitySpinner.setEnabled(true);
-//            index = recipeList.getSelectedIndex();
-//            DishType dish = dishList.get(index);
-//            recipeTextField.setText(dish.name);
-//            servingsNum.setText("" + dish.numServings);
-//                numServingsTextField.setText("" + dish.numServings);
-//            setDishType(dish);
-//        }
-        //**********************************************
+        processMenuItemClicked();
     }//GEN-LAST:event_breakfastListMouseClicked
 
     private void jButton3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton3MouseClicked
         //clear breakfast menu list
         clearMenu(breakfastMenu, breakfastModel, breakfastList, BREAKFAST);
-        setList(breakfastMenu, breakfastModel, breakfastList, BREAKFAST);
+        breakfastMenu = setList(breakfastMenu, breakfastModel, breakfastList, BREAKFAST);
     }//GEN-LAST:event_jButton3MouseClicked
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
@@ -1325,7 +1271,8 @@ public class MenuMaker extends javax.swing.JFrame {
         metodos.addMenu((String) dateSpinner.getValue(), BREAKFAST, breakfastMenu);
 
         clearMenu(breakfastMenu, breakfastModel, breakfastList, BREAKFAST);
-        setList(breakfastMenu, breakfastModel, breakfastList, BREAKFAST);
+        breakfastMenu = setList(breakfastMenu, breakfastModel, breakfastList, BREAKFAST);
+        updateDishTypeCount();
 
     }//GEN-LAST:event_jButton2MouseClicked
 
@@ -1342,7 +1289,7 @@ public class MenuMaker extends javax.swing.JFrame {
         metodos.addMenu((String) dateSpinner.getValue(), LUNCH, lunchMenu);
 
         clearMenu(lunchMenu, lunchModel, lunchList, LUNCH);
-        setList(lunchMenu, lunchModel, lunchList, LUNCH);
+        lunchMenu = setList(lunchMenu, lunchModel, lunchList, LUNCH);
     }//GEN-LAST:event_jButton10MouseClicked
 
     private void jButton11MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton11MouseClicked
@@ -1358,7 +1305,7 @@ public class MenuMaker extends javax.swing.JFrame {
         metodos.addMenu((String) dateSpinner.getValue(), DINNER, dinnerMenu);
 
         clearMenu(dinnerMenu, dinnerModel, dinnerList, DINNER);
-        setList(dinnerMenu, dinnerModel, dinnerList, DINNER);
+        dinnerMenu = setList(dinnerMenu, dinnerModel, dinnerList, DINNER);
     }//GEN-LAST:event_jButton11MouseClicked
 
     private void dinnerListMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dinnerListMouseEntered
@@ -1375,9 +1322,10 @@ public class MenuMaker extends javax.swing.JFrame {
 
     private void dateSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_dateSpinnerStateChanged
         // spinner data state changed. load data for this date
-        setList(breakfastMenu, breakfastModel, breakfastList, BREAKFAST);
-        setList(lunchMenu, lunchModel, lunchList, LUNCH);
-        setList(dinnerMenu, dinnerModel, dinnerList, DINNER);
+        clearFields();
+        breakfastMenu = setList(breakfastMenu, breakfastModel, breakfastList, BREAKFAST);
+        lunchMenu = setList(lunchMenu, lunchModel, lunchList, LUNCH);
+        dinnerMenu = setList(dinnerMenu, dinnerModel, dinnerList, DINNER);
     }//GEN-LAST:event_dateSpinnerStateChanged
 
     /**
@@ -1425,7 +1373,7 @@ public class MenuMaker extends javax.swing.JFrame {
     public static DefaultListModel lunchModel = new DefaultListModel();
     public static DefaultListModel dinnerModel = new DefaultListModel();
 
-    public static ArrayList<MenuDishType> activeMenu = new ArrayList<>();
+//    activeMenu  = new ArrayList<MenuDishType>();
     public static ArrayList<MenuDishType> breakfastMenu = new ArrayList<>();
     public static ArrayList<MenuDishType> lunchMenu = new ArrayList<>();
     public static ArrayList<MenuDishType> dinnerMenu = new ArrayList<>();
@@ -1521,9 +1469,9 @@ public class MenuMaker extends javax.swing.JFrame {
     private javax.swing.JLabel servingsNum;
     // End of variables declaration//GEN-END:variables
 
-    private void setList(ArrayList<MenuDishType> list, DefaultListModel model, JList<String> jList, int meal) {
+    private ArrayList<MenuDishType> setList(ArrayList<MenuDishType> list, DefaultListModel model, JList<String> jList, int meal) {
         model.clear();
-        System.out.println("In setList, list is " + (list.isEmpty() ? "Empty" : "Contains something"));
+        System.out.println("setList");
         if (meal > 0) {
             try {
                 SimpleDateFormat sqf = new SimpleDateFormat("yyyy-MM-dd");
@@ -1536,9 +1484,13 @@ public class MenuMaker extends javax.swing.JFrame {
             }
         }
         for (MenuDishType dish : list) {
-            model.addElement(dish.quantity + " " + dish.name);
+            model.addElement(dish.toString());
         }
+        meal = (meal == 4) ? meal - 2 : meal - 1;
+        updateOneDishCount(list, meal);
+//        System.out.println("In setList, list is " + (list.isEmpty() ? "Empty" : "Contains something"));
         jList.setModel(model);
+        return list;
     }
 
     private void setDishList(ArrayList<DishType> list, JList<String> jList, DefaultListModel model) {
@@ -1548,21 +1500,13 @@ public class MenuMaker extends javax.swing.JFrame {
         jList.setModel(model);
     }
 
-    private int getActiveMenu() {
-        if (breakfastRadioBtn.isSelected()) {
-            return 1;
-        } else if (lunchRadioBtn.isSelected()) {
-            return 2;
-        } else {
-            return 4;
-        }
-    }
-
     private void clearFields() {
         recipeTextField.setText("");
         numServingsTextField.setText("0");
         servingsNum.setText("0");
         quantitySpinner.setValue(0);
+        quantitySpinner.setEnabled(false);
+        recipeTmp = null;
     }
 
     private void setActive(JRadioButton radioBtn, ArrayList<MenuDishType> menu, DefaultListModel model, JList<String> list) {
@@ -1572,30 +1516,29 @@ public class MenuMaker extends javax.swing.JFrame {
         activeList = list;
     }
 
-    private boolean duplicateDish(ArrayList<MenuDishType> menu, int id) {
+    private int duplicateDish(ArrayList<MenuDishType> menu, int id) {
         for (int i = 0; i < menu.size(); i++) {
             if (menu.get(i).id == id) {
-                return true;
+                return i;
             }
         }
-        return false;
+        return -1;
     }
 
-    private void placeDishInEditor(ArrayList<MenuDishType> menu, int id) {
-        int index = 0;
-        for (int i = 0; i < menu.size(); i++) {
-            if (menu.get(i).id == id) {
-                index = i;
-            }
-        }
-        MenuDishType dish = menu.get(index);
-        recipeTextField.setText(dish.name);
-        quantitySpinner.setValue(dish.quantity);
-        numServingsTextField.setText("" + (dish.numServings * dish.quantity));
-        setDishType(dish);
-        updateDishTypeCount(getActiveMenu(), dish.dishType, -(dish.numServings * dish.quantity));
-    }
-
+//    private void placeDishInEditor(ArrayList<MenuDishType> menu, int id) {
+//        int index = 0;
+//        for (int i = 0; i < menu.size(); i++) {
+//            if (menu.get(i).id == id) {
+//                index = i;
+//            }
+//        }
+//        MenuDishType dish = menu.get(index);
+//        recipeTextField.setText(dish.name);
+//        quantitySpinner.setValue(dish.quantity);
+//        numServingsTextField.setText("" + (dish.numServings * dish.quantity));
+//        setDishType(dish);
+////        updateDishTypeCount(getActiveMenu(), dish.dishType, -(dish.numServings * dish.quantity));
+//    }
     private void setDishType(DishType dish) {
         switch (dish.dishType) {
             case 1 -> {
@@ -1614,21 +1557,28 @@ public class MenuMaker extends javax.swing.JFrame {
         }
     }
 
-    private void updateDishTypeCount(int menu, int dishType, int count) {
-        menu = menu - ((menu < 4) ? 1 : 2);
-        int index = menu * 4 + dishType - 1;
-        int tmp = Integer.parseInt(dishTypeCount.get(index).getText());
-        System.out.print("menu: " + menu + ", dishType: " + dishType + ", quantity = ");
-        System.out.println(tmp + count);
-        dishTypeCount.get(index).setText("" + (tmp + count));
+    private void updateOneDishCount(ArrayList<MenuDishType> menu, int meal) {
+        System.out.println("updateOneDIshCount");
+        int[] type = {0, 0, 0, 0};
+        System.out.println("Menu is " + ((menu == null) ? "null" : "not null"));
+        System.out.println("meal = " + meal);
+        if (menu != null) {
+            for (MenuDishType item : menu) {
+                type[item.dishType - 1] += item.numServings * item.quantity;
+            }
+        }
+        System.out.println("2");
+        for (int i = 0; i < 4; i++) {
+            System.out.println("I: " + i);
+            dishTypeCount.get(meal * 4 + i).setText("" + type[i]);
+        }
     }
 
-    private int getNormalizedMeal(int meal) {
-        if (meal == 4) {
-            return meal - 2;
-        } else {
-            return meal - 1;
-        }
+    private void updateDishTypeCount() {
+        System.out.println("updateDishTypeCount");
+        updateOneDishCount(breakfastMenu, 0);
+        updateOneDishCount(lunchMenu, 1);
+        updateOneDishCount(dinnerMenu, 2);
     }
 
     private void clearMealServingCounts(int clearBtn) {
@@ -1637,12 +1587,76 @@ public class MenuMaker extends javax.swing.JFrame {
         }
     }
 
+    private int getActiveMenu() {
+        if (breakfastRadioBtn.isSelected()) {
+            return 1;
+        } else if (lunchRadioBtn.isSelected()) {
+            return 2;
+        } else {
+            return 4;
+        }
+    }
+
+    private int getNormalizedMenu() {
+        int meal = getActiveMenu();
+        if (meal == 4) {
+            return meal - 2;
+        } else {
+            return meal - 1;
+        }
+    }
+
     private void clearMenu(ArrayList<MenuDishType> menu, DefaultListModel model, JList<String> list, int meal) {
-//        menu.clear();
+        menu.clear();
         model.clear();
         list.setModel(model);
-        clearMealServingCounts(getNormalizedMeal(meal));
-        // nead to repopulate from database
-        setList(menu, model, list, meal);
+        clearMealServingCounts(getNormalizedMenu());
+//        // nead to repopulate from database
+//        setList(menu, model, list, meal);
+    }
+
+    // Date functions
+    private Calendar setDateSpinnerValues() {
+        Date menuDate = new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(menuDate);
+        for (int i = 0; i < 14; i++) {
+            menuDates.add(sdf.format(cal.getTime()));
+            cal.add(Calendar.DATE, 1);
+        }
+        return cal;
+    }
+
+    private Date getDateFromSpinner() {
+        try {
+            return sdf.parse((String) dateSpinner.getValue());
+        } catch (ParseException e) {
+            System.out.println("ParesException: " + e);
+        }
+        return null;
+    }
+
+    private void processMenuItemClicked() {
+        clearFields();
+        bldButtonPressed = true;
+        if (recipeTextField.getText().equals("")) {
+            index = activeList.getSelectedIndex();
+            if (index >= 0) {
+                quantitySpinner.setEnabled(true);
+                recipeTmp = new MenuDishType(activeMenu.get(index));
+                recipeTextField.setText(recipeTmp.name);
+                servingsNum.setText("" + recipeTmp.numServings);
+                quantitySpinner.setValue(recipeTmp.quantity);
+                numServingsTextField.setText("" + recipeTmp.quantity * recipeTmp.numServings);
+                setDishType(recipeTmp);
+                activeMenu.remove(index);
+                updateDishTypeCount();
+                activeModel.clear();
+                for (MenuDishType item : activeMenu) {
+                    activeModel.addElement(item.toString());
+                }
+                activeList.setModel(activeModel);
+            }
+        }
     }
 }
