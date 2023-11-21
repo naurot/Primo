@@ -77,6 +77,9 @@ public class LoginUI extends javax.swing.JFrame {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 jPasswordField1KeyPressed(evt);
             }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jPasswordField1KeyTyped(evt);
+            }
         });
 
         jTextField1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
@@ -195,9 +198,7 @@ public class LoginUI extends javax.swing.JFrame {
 
     private void jPasswordField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPasswordField1ActionPerformed
         // TODO add your handling code here:
-        if (!jTextField1.getText().equals("")) {
 
-        }
     }//GEN-LAST:event_jPasswordField1ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -223,70 +224,68 @@ public class LoginUI extends javax.swing.JFrame {
 //    byte[] salt = getSalt();
 //    String pass1 = getSecurePassword(userPassword, salt);
 ////********************************************************************
-    int role = 0;
-    String query = "SELECT role FROM primo.password where primo.password.name='" + userName + "' and primo.password.password='" + userPassword + "';";
+            int role = 0;
+            String query = "SELECT role FROM primo.password where primo.password.name='" + userName + "' and primo.password.password='" + userPassword + "';";
 
-    System.out.println (
-    "query: \n\t" + query);
-            rs  = conn.createStatement().executeQuery(query);
+            System.out.println(
+                    "query: \n\t" + query);
+            rs = conn.createStatement().executeQuery(query);
 
-    while (rs.next () 
-        ) {
+            while (rs.next()) {
                 role = Integer.parseInt(rs.getString(1));
-        System.out.println(rs.getString(1));
-    }
-    String date;
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-    date  = sdf.format(new Date());
-    query  = "UPDATE password SET "
-            + "name = '" + userName + "',"
-            + "password = '" + userPassword + "',"
-            + "role = " + role + ","
-            + "last = '" + date + "' "
-            + "WHERE name = '" + userName
-            + "' and password = '" + userPassword + "'";
+                System.out.println(rs.getString(1));
+            }
+            String date;
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            date = sdf.format(new Date());
+            query = "UPDATE password SET "
+                    + "name = '" + userName + "',"
+                    + "password = '" + userPassword + "',"
+                    + "role = " + role + ","
+                    + "last = '" + date + "' "
+                    + "WHERE name = '" + userName
+                    + "' and password = '" + userPassword + "'";
 
-    metodos.adminUI (query);
+            metodos.adminUI(query);
 
-    conn.close ();
+            conn.close();
 
-    switch (role) {
-        case 1 -> {
-            //adminUI
-            AdminUI adminUI = new AdminUI();
-            adminUI.setVisible(true);
-            setVisible(false);
-            dispose();
-        }
+            switch (role) {
+                case 1 -> {
+                    //adminUI
+                    AdminUI adminUI = new AdminUI();
+                    adminUI.setVisible(true);
+                    setVisible(false);
+                    dispose();
+                }
 
-        case 2 -> {
-            MenuMaker menuMaker = new MenuMaker();
-            menuMaker.setVisible(true);
-            setVisible(false);
-            dispose();
-        }
+                case 2 -> {
+                    MenuMaker menuMaker = new MenuMaker();
+                    menuMaker.setVisible(true);
+                    setVisible(false);
+                    dispose();
+                }
 
-        case 3 -> {
-            RecipeMaker recipeMaker = new RecipeMaker();
-            recipeMaker.setVisible(true);
-            setVisible(false);
-            dispose();
-        }
+                case 3 -> {
+                    RecipeMaker recipeMaker = new RecipeMaker();
+                    recipeMaker.setVisible(true);
+                    setVisible(false);
+                    dispose();
+                }
 
-        case 4 -> {
-            Inventory inventory = new Inventory();
-            inventory.setVisible(true);
-            setVisible(false);
-            dispose();
-        }
+                case 4 -> {
+                    Inventory inventory = new Inventory();
+                    inventory.setVisible(true);
+                    setVisible(false);
+                    dispose();
+                }
 
-        default ->
-            dispose();
-    } //RecipeMaker
+                default ->
+                    dispose();
+            } //RecipeMaker
             //Inventory/PO/Invoice/Cooking
 
-}
-catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
             System.out.println("JDBC driver not found!");
             e.printStackTrace();
         } catch (SQLException e) {
@@ -297,9 +296,17 @@ catch (ClassNotFoundException e) {
 
     private void jPasswordField1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jPasswordField1KeyPressed
         // TODO add your handling code here:
-        if (evt.getKeyCode() == 13)
+        if (evt.getKeyCode() == 10) {
             System.out.println("Enter pressed");
+            jButton1.doClick(100);
+        }
     }//GEN-LAST:event_jPasswordField1KeyPressed
+
+    private void jPasswordField1KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jPasswordField1KeyTyped
+        // TODO add your handling code here:
+        if(evt.getKeyCode()==13)
+            jButton1.doClick(100);
+    }//GEN-LAST:event_jPasswordField1KeyTyped
 
     /**
      * @param args the command line arguments
@@ -316,38 +323,32 @@ catch (ClassNotFoundException e) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
 
-}
+                }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(LoginUI.class  
+            java.util.logging.Logger.getLogger(LoginUI.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
 
-.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(LoginUI.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
 
-} catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(LoginUI.class  
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(LoginUI.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
 
-.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-
-} catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(LoginUI.class  
-
-.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-
-} catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(LoginUI.class  
-
-.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(LoginUI.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
-        System.out.println("Before");
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new LoginUI().setVisible(true);
             }
         });
-        System.out.println("After");
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -362,7 +363,7 @@ catch (ClassNotFoundException e) {
     private javax.swing.JTextField jTextField1;
     // End of variables declaration//GEN-END:variables
 
-            // *********************************       
+    // *********************************       
     public static String getSecurePassword(String password, byte[] salt) {
 
         String generatedPassword = null;

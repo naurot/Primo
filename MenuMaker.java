@@ -40,6 +40,8 @@ public class MenuMaker extends javax.swing.JFrame {
     public static final int DINNER = 4;
     public static MenuDishType recipeTmp;
     static ArrayList<MenuDishType> activeMenu;
+    public static JList activeList = new JList();
+    public static DefaultListModel activeModel = new DefaultListModel();
 
     /**
      * Creates new form SecondTestUI
@@ -241,7 +243,7 @@ public class MenuMaker extends javax.swing.JFrame {
         jPanel9.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
 
         jButton3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jButton3.setText("Clear");
+        jButton3.setText("Cancel");
         jButton3.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jButton3MouseClicked(evt);
@@ -451,7 +453,7 @@ public class MenuMaker extends javax.swing.JFrame {
         lunchApps.setText("0");
 
         jButton4.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jButton4.setText("Clear");
+        jButton4.setText("Cancel");
         jButton4.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jButton4MouseClicked(evt);
@@ -520,8 +522,8 @@ public class MenuMaker extends javax.swing.JFrame {
                         .addComponent(jLabel3)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel10Layout.createSequentialGroup()
-                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton10)))
                 .addContainerGap())
         );
@@ -668,7 +670,7 @@ public class MenuMaker extends javax.swing.JFrame {
         jLabel8.setText("Servings");
 
         jButton5.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jButton5.setText("Clear");
+        jButton5.setText("Cancel");
         jButton5.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jButton5MouseClicked(evt);
@@ -1368,7 +1370,6 @@ public class MenuMaker extends javax.swing.JFrame {
     public static ArrayList<DishType> dishList = new ArrayList<>();
     public static DefaultListModel dishModel = new DefaultListModel();
 
-    public static DefaultListModel activeModel = new DefaultListModel();
     public static DefaultListModel breakfastModel = new DefaultListModel();
     public static DefaultListModel lunchModel = new DefaultListModel();
     public static DefaultListModel dinnerModel = new DefaultListModel();
@@ -1378,7 +1379,6 @@ public class MenuMaker extends javax.swing.JFrame {
     public static ArrayList<MenuDishType> lunchMenu = new ArrayList<>();
     public static ArrayList<MenuDishType> dinnerMenu = new ArrayList<>();
 
-    public static JList activeList = new JList();
     public static ArrayList<JLabel> dishTypeCount = new ArrayList<>();
 
     int index;
@@ -1525,20 +1525,6 @@ public class MenuMaker extends javax.swing.JFrame {
         return -1;
     }
 
-//    private void placeDishInEditor(ArrayList<MenuDishType> menu, int id) {
-//        int index = 0;
-//        for (int i = 0; i < menu.size(); i++) {
-//            if (menu.get(i).id == id) {
-//                index = i;
-//            }
-//        }
-//        MenuDishType dish = menu.get(index);
-//        recipeTextField.setText(dish.name);
-//        quantitySpinner.setValue(dish.quantity);
-//        numServingsTextField.setText("" + (dish.numServings * dish.quantity));
-//        setDishType(dish);
-////        updateDishTypeCount(getActiveMenu(), dish.dishType, -(dish.numServings * dish.quantity));
-//    }
     private void setDishType(DishType dish) {
         switch (dish.dishType) {
             case 1 -> {
@@ -1593,6 +1579,7 @@ public class MenuMaker extends javax.swing.JFrame {
         } else if (lunchRadioBtn.isSelected()) {
             return 2;
         } else {
+            //??    dinnerRadioBtn.setSelected(true);
             return 4;
         }
     }

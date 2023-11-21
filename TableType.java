@@ -23,4 +23,13 @@ public class TableType {
     public TableType(int id, String name, int brandID, String brandName, int type, Date date, int po, int vendorID, int sQuantity, int size, int sUnits, BigDecimal cost){
         
     }
+    public Object[] toTbl(){
+        Object[] retVal = new Object[5];
+        retVal[0] = name;
+        retVal[1] = quantity;
+        retVal[2] = 0;
+        retVal[3] = 0;
+        retVal[4] = false;
+        return retVal;
+    }
 }

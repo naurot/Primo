@@ -309,6 +309,7 @@ public class Metodos<T> {
         ArrayList<TableType> retVal = new ArrayList<>();
         String query;
         conn = db.getConnection();
+        TableType tmp;
         try {
             stmt = conn.createStatement();
 //            SELECT * FROM ((inventory natural join stocks)  right join suppliedby on purchaseorder = po and vendor_id = sb_vendor_id);
@@ -316,19 +317,21 @@ public class Metodos<T> {
             query = "select i.id,name,i.brand_id,i.brand_name,type,date,po,sb_vendor_id, suppliedquantity,size,suppliedunits,cost from ingredient i left join suppliedby s on i.id=s.id and i.brand_id=s.brand_id and i.brand_name=s.brand_name";
             rs = stmt.executeQuery(query);
             while (rs.next()) {
-                retVal.add(new TableType(rs.getInt("id"),
-                        rs.getString("name"),
-                        rs.getInt("brand_id"),
-                        rs.getString("brand_name"),
-                        rs.getInt("type"),
-                        rs.getDate("date"),
-                        rs.getInt("po"),
-                        rs.getInt("sb_vendor_id"),
-                        rs.getInt("suppliedQuantity"),
-                        rs.getInt("size"),
-                        rs.getInt("suppliedUnits"),
-                        rs.getBigDecimal("cost")));
-
+                tmp = new TableType();
+                tmp.id = rs.getInt("id");
+                tmp.name = rs.getString("name");
+                tmp.brand_id = rs.getInt("brand_id");
+                tmp.brand_name = rs.getString("brand_name");
+                tmp.type = rs.getInt("type");
+                tmp.date = rs.getDate("date");
+                tmp.po = rs.getInt("po");
+                tmp.vendor_id = rs.getInt("sb_vendor_id");
+                tmp.quantity = rs.getInt("suppliedQuantity");
+                tmp.size = rs.getInt("size");
+                tmp.units = rs.getInt("suppliedUnits");
+                tmp.cost = rs.getBigDecimal("cost");
+                System.out.println("name" + tmp.type);
+                retVal.add(tmp);
             }
         } catch (SQLException sqle) {
             System.out.println("SQLException: " + sqle);
