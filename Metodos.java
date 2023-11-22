@@ -305,7 +305,7 @@ public class Metodos<T> {
         }
     }
 
-    public ArrayList<TableType> popIngTable() {
+    public ArrayList<TableType> popITable() {
         ArrayList<TableType> retVal = new ArrayList<>();
         String query;
         conn = db.getConnection();
@@ -330,12 +330,20 @@ public class Metodos<T> {
                 tmp.size = rs.getInt("size");
                 tmp.units = rs.getInt("suppliedUnits");
                 tmp.cost = rs.getBigDecimal("cost");
-                System.out.println("name" + tmp.type);
+                System.out.println("name" + tmp.name);
                 retVal.add(tmp);
             }
         } catch (SQLException sqle) {
             System.out.println("SQLException: " + sqle);
         }
         return retVal;
+    }
+
+    public ArrayList<Object> popVTable() {
+        return new ArrayList<>(1);
+    }
+
+    public ArrayList<Object> popIngTable() {
+        return new ArrayList<>(1);
     }
 }

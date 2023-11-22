@@ -22,6 +22,7 @@ import javax.swing.JList;
 import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerListModel;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.table.TableModel;
 
 /**
@@ -155,7 +156,8 @@ public class MenuMaker extends javax.swing.JFrame {
         numServingsTextField = new javax.swing.JLabel();
         jLabel28 = new javax.swing.JLabel();
         jLabel29 = new javax.swing.JLabel();
-        quantitySpinner = new javax.swing.JSpinner();
+        SpinnerNumberModel quantityModel = new SpinnerNumberModel(0,0,null,1);
+        quantitySpinner = new javax.swing.JSpinner(quantityModel);
         addDishBtn = new javax.swing.JButton();
         cancelDishBtn = new javax.swing.JButton();
         breakfastRadioBtn = new javax.swing.JRadioButton();
@@ -1138,7 +1140,7 @@ public class MenuMaker extends javax.swing.JFrame {
 
                 setDishType(dish);
                 recipeTmp = new MenuDishType(getDateFromSpinner(), getActiveMenu(), dish, 0);
-
+                setActiveMenu();
                 int dupIdx = duplicateDish(activeMenu, dish.id);
                 if (dupIdx >= 0) {
                     recipeTmp.quantity = activeMenu.get(dupIdx).quantity;
@@ -1579,7 +1581,7 @@ public class MenuMaker extends javax.swing.JFrame {
         } else if (lunchRadioBtn.isSelected()) {
             return 2;
         } else {
-            //??    dinnerRadioBtn.setSelected(true);
+            dinnerRadioBtn.setSelected(true);
             return 4;
         }
     }
@@ -1593,6 +1595,12 @@ public class MenuMaker extends javax.swing.JFrame {
         }
     }
 
+    public void setActiveMenu(){
+        int meal = getActiveMenu();
+        if (meal == 1) activeMenu = breakfastMenu;
+        if (meal == 2) activeMenu = lunchMenu;
+        if (meal == 4) activeMenu = dinnerMenu;
+    }
     private void clearMenu(ArrayList<MenuDishType> menu, DefaultListModel model, JList<String> list, int meal) {
         menu.clear();
         model.clear();

@@ -1407,6 +1407,10 @@
                         <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="quantitySpinnerMouseClicked"/>
                         <EventHandler event="propertyChange" listener="java.beans.PropertyChangeListener" parameters="java.beans.PropertyChangeEvent" handler="quantitySpinnerPropertyChange"/>
                       </Events>
+                      <AuxValues>
+                        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JSpinner(quantityModel)"/>
+                        <AuxValue name="JavaCodeGenerator_CreateCodePre" type="java.lang.String" value="SpinnerNumberModel quantityModel = new SpinnerNumberModel(0,0,null,1);"/>
+                      </AuxValues>
                     </Component>
                     <Component class="javax.swing.JButton" name="addDishBtn">
                       <Properties>
