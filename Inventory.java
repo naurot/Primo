@@ -4,6 +4,7 @@
  */
 package my.contacteditor;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Vector;
 import javax.swing.JTable;
@@ -26,19 +27,16 @@ public class Inventory extends javax.swing.JFrame {
     static String[] invTblHeadings = {"Location", "Ingredient", "PO#", "Quantity", "Date Ordered", "Exp Date"};
     static Object[][] dataInvTbl = new Object[200][5];
     static DefaultTableModel invModel;
-//    static JTable invTable;
 
     static ArrayList<OrderType> dataOrderRaw = new ArrayList<>();
     static String[] orderTblHeadings = {"Ingredient", "Quantity", "Units", "Cost", "Exp Date"};
     static Object[][] dataOrderTbl = new Object[200][6];
     static DefaultTableModel orderModel;
-//    static JTable orderTable;
 
     static Object[][] dataIngRaw;
     static String[] ingTblHeadings = {"Ingredient", "Quantity", "Location", "Exp Date", "PO #"};
     static Object[][] dataIngTbl = new Object[200][5];
     static DefaultTableModel ingModel;
-    static JTable ingTable = new JTable();
 
     @SuppressWarnings("empty-statement")
     public Inventory() {
@@ -80,7 +78,7 @@ public class Inventory extends javax.swing.JFrame {
         jButton3 = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         ingScrollPane = new javax.swing.JScrollPane();
-        gTable = new javax.swing.JTable(dataIngTbl, ingTblHeadings);
+        ingTable = new javax.swing.JTable(dataIngTbl, ingTblHeadings);
         jLabel5 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -138,6 +136,14 @@ public class Inventory extends javax.swing.JFrame {
         }
         public void mouseReleased(java.awt.event.MouseEvent evt) {
             orderTableMouseReleased(evt);
+        }
+    });
+    orderTable.addKeyListener(new java.awt.event.KeyAdapter() {
+        public void keyReleased(java.awt.event.KeyEvent evt) {
+            orderTableKeyReleased(evt);
+        }
+        public void keyTyped(java.awt.event.KeyEvent evt) {
+            orderTableKeyTyped(evt);
         }
     });
     System.out.println("Something happened");
@@ -302,9 +308,9 @@ public class Inventory extends javax.swing.JFrame {
 
     jPanel4.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
 
-    gTable.setModel(new javax.swing.table.DefaultTableModel(dataIngTbl, ingTblHeadings
+    ingTable.setModel(new javax.swing.table.DefaultTableModel(dataIngTbl, ingTblHeadings
     ));
-    ingScrollPane.setViewportView(gTable);
+    ingScrollPane.setViewportView(ingTable);
 
     jLabel5.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
     jLabel5.setText("Consuming");
@@ -381,6 +387,7 @@ public class Inventory extends javax.swing.JFrame {
 
     private void invTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_invTableMouseClicked
         // clicked row in ingredient table
+        System.out.println("Mouse clicked in Inventory ");
     }//GEN-LAST:event_invTableMouseClicked
 
     private void jButton3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton3MouseClicked
@@ -394,17 +401,17 @@ public class Inventory extends javax.swing.JFrame {
     private void orderTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_orderTableMouseClicked
         // mouse click in Order Table
         System.out.println("Order Tbl mouse clicked");
-        Object orderVal;
-        OrderType tmp;
-        int row = orderTable.getSelectedRow();
-        int col = orderTable.getSelectedColumn();
-        if (col == 1) {
-            tmp = dataOrderRaw.get(row);
-            orderVal = orderModel.getValueAt(row, col);
-            tmp.quantity = (int) orderVal;
-            dataOrderRaw.set(row, tmp);
-            System.out.println("Changing values??");
-        }
+//        Object orderVal;
+//        OrderType tmp;
+//        int row = orderTable.getSelectedRow();
+//        int col = orderTable.getSelectedColumn();
+//        if (col == 1) {
+//            tmp = dataOrderRaw.get(row);
+//            orderVal = orderModel.getValueAt(row, col);
+//            tmp.quantity = (int) orderVal;
+//            orderModel.setValueAt(tmp.quantity, row, col);
+//            System.out.println("Changing values??");
+//        }
     }//GEN-LAST:event_orderTableMouseClicked
 
     private void jButton6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton6MouseClicked
@@ -426,26 +433,59 @@ public class Inventory extends javax.swing.JFrame {
     private void jButton5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton5MouseClicked
         // mouse click "Submit" button in Order Table
         System.out.println("Submit clicked");
-      for (int i = 0; i < orderModel.getRowCount(); i++){
-          System.out.println("item: " + orderModel.getValueAt(i, 0) +", "+orderModel.getValueAt(i,1));
-      }
+        for (OrderType item : dataOrderRaw) {
+            System.out.println(item.name + ", " + item.quantity);
+        }
+
     }//GEN-LAST:event_jButton5MouseClicked
 
     private void orderTableMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_orderTableMouseReleased
         // order table mouse released
-                System.out.println("Order Tbl mouse released");
-        Object orderVal;
+//                System.out.println("Order Tbl mouse released");
+//        Object orderVal;
+//        OrderType tmp;
+//        int row = orderTable.getSelectedRow();
+//        int col = orderTable.getSelectedColumn();
+//        if (col == 1) {
+//            tmp = dataOrderRaw.get(row);
+//            orderVal = orderModel.getValueAt(row, col);
+//            tmp.quantity = (int) orderVal;
+//            dataOrderRaw.set(row, tmp);
+//            System.out.println("Changing values??");
+//        }
+    }//GEN-LAST:event_orderTableMouseReleased
+
+    private void orderTableKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_orderTableKeyReleased
+        // TODO add your handling code here:
+        String orderVal;
         OrderType tmp;
         int row = orderTable.getSelectedRow();
         int col = orderTable.getSelectedColumn();
         if (col == 1) {
             tmp = dataOrderRaw.get(row);
-            orderVal = orderModel.getValueAt(row, col);
-            tmp.quantity = (int) orderVal;
-            dataOrderRaw.set(row, tmp);
-            System.out.println("Changing values??");
+            orderVal = orderTable.getValueAt(row, col).toString();
+            tmp.quantity = Integer.parseInt(orderVal);
+//            orderModel.setValueAt(tmp.quantity, row, col);
+            orderTable.setValueAt(tmp.quantity, row, col);
+            System.out.println("Changing values");
         }
-    }//GEN-LAST:event_orderTableMouseReleased
+    }//GEN-LAST:event_orderTableKeyReleased
+
+    private void orderTableKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_orderTableKeyTyped
+        // key pressed
+//                String orderVal;
+//        OrderType tmp;
+//        int row = orderTable.getSelectedRow();
+//        int col = orderTable.getSelectedColumn();
+//        if (col == 1) {
+//            tmp = dataOrderRaw.get(row);
+//            orderVal = orderTable.getValueAt(row, col).toString();
+//            tmp.quantity = Integer.parseInt(orderVal);
+////            orderModel.setValueAt(tmp.quantity, row, col);
+//            orderTable.setValueAt(tmp.quantity, row, col);
+//            System.out.println("Changing values");
+//        }
+    }//GEN-LAST:event_orderTableKeyTyped
 
     /**
      * @param args the command line arguments
@@ -485,9 +525,9 @@ public class Inventory extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel dateLbl;
-    private javax.swing.JTable gTable;
     private javax.swing.JScrollPane iScrollPane;
     private javax.swing.JScrollPane ingScrollPane;
+    private javax.swing.JTable ingTable;
     private javax.swing.JTable invTable;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
@@ -516,7 +556,6 @@ public class Inventory extends javax.swing.JFrame {
         for (TableType row : dataInvRaw) {
             dataInvTbl[i++] = row.toTbl();
         }
-        invTable = new JTable();
         invModel = new DefaultTableModel(dataInvTbl, invTblHeadings);
         invTable.setModel(invModel);
         iScrollPane.setViewportView(invTable);
@@ -532,7 +571,7 @@ public class Inventory extends javax.swing.JFrame {
         for (OrderType row : dataOrderRaw) {
             dataOrderTbl[i++] = row.toTable();
         }
-        orderTable = new JTable();
+//        orderTable = new JTable();
         orderModel = new DefaultTableModel(dataOrderTbl, orderTblHeadings);
         orderTable.setModel(orderModel);
         vScrollPane.setViewportView(orderTable);
