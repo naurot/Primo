@@ -4,6 +4,7 @@
  */
 package my.contacteditor;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Vector;
@@ -22,6 +23,9 @@ public class Inventory extends javax.swing.JFrame {
      * Creates new form Inventory
      */
     Metodos metodos = new Metodos();
+    static final String[][] unit = {{"each", "dozen"},
+    {"dash", "tsp", "Tbs", "ounce", "cup", "lb"},
+    {"splash", "tsp", "Tbs", "ounce", "cup", "pint", "quart", "gal"}};
 
     static ArrayList<TableType> dataInvRaw = new ArrayList<>();
     static String[] invTblHeadings = {"Location", "Ingredient", "PO#", "Quantity", "Date Ordered", "Exp Date"};
@@ -589,18 +593,8 @@ public class Inventory extends javax.swing.JFrame {
         ingTable.setModel(ingModel);
         ingScrollPane.setViewportView(ingTable);
     }
-    //************
-//    iTable = new javax.swing.JTable(dataITbl, iTblHeadings);
-//
-//iTable.setModel(new javax.swing.table.DefaultTableModel(
-//    dataITbl, iTblHeadings));
-//
-//iTable.addMouseListener(new java.awt.event.MouseAdapter() {
-//    public void mouseClicked(java.awt.event.MouseEvent evt) {
-//        iTableMouseClicked(evt);
-//    }
-//});
 
-//jScrollPane1.setViewportView(iTable);
-    //************
+    public static String getMeasure(BigDecimal quantity, int units, int type) {
+        return unit[type][units] + (quantity.compareTo(BigDecimal.valueOf(1)) == 1 && units != 2 && type != 0 ? "s" : "");
+    }
 }

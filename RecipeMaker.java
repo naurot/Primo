@@ -20,8 +20,8 @@ public class RecipeMaker extends javax.swing.JFrame {
     static int ingListIdx = -1;
 
     final String[][] unit = {{"each", "dozen"},
-                               {"dash", "tsp", "tsps", "Tbs", "ounce", "ounces", "cup", "cups", "lb", "lbs"},
-                               {"splash", "tsp", "tsps", "Tbs", "ounce", "ounces", "cup", "cups", "pint", "pints", "quart", "quart"}};
+                               {"dash", "tsp", "Tbs", "ounce", "cup", "lb"},
+                               {"splash", "tsp", "Tbs", "ounce", "cup", "pint", "quart", "gal"}};
 String[] units = unit[2];
     /**
      * Creates new form RecipeMaker
