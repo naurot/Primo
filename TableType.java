@@ -24,12 +24,13 @@ public class TableType {
         
     }
     public Object[] toTbl(){
-        Object[] retVal = new Object[5];
-        retVal[0] = name;
-        retVal[1] = quantity;
+        Object[] retVal = new Object[6];
+        retVal[0] = 0;
+        retVal[1] = name;
         retVal[2] = 0;
-        retVal[3] = 0;
+        retVal[3] = quantity;
         retVal[4] = false;
+        retVal[5] = 0;
         return retVal;
     }
 }
