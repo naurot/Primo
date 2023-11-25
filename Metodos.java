@@ -305,7 +305,7 @@ public class Metodos<T> {
         }
     }
 
-    public ArrayList<TableType> popITable() {
+    public ArrayList<TableType> popInvTable() {
         ArrayList<TableType> retVal = new ArrayList<>();
         String query;
         conn = db.getConnection();
@@ -314,7 +314,9 @@ public class Metodos<T> {
             stmt = conn.createStatement();
 //            SELECT * FROM ((inventory natural join stocks)  right join suppliedby on purchaseorder = po and vendor_id = sb_vendor_id);
             query = "SELECT * FROM ingredient left join (SELECT id, name, brand_id, brand_name, SUM(quantity) as Total from inventory group by id, brand_id, brand_name) on ingredient.id = inventory.ing_id)";
-            query = "select i.id,name,i.brand_id,i.brand_name,type,date,po,sb_vendor_id, suppliedquantity,size,suppliedunits,cost from ingredient i left join suppliedby s on i.id=s.id and i.brand_id=s.brand_id and i.brand_name=s.brand_name";
+            query = "select i.id,name,i.brand_id,i.brand_name,type,date,po,sb_vendor_id, suppliedquantity,size,suppliedunits,cost from ingredient i left join po p on i.id=p.ingid and i.brand_id=p.brand_id and i.brand_name=p.brand_name";
+            query = "select * from ingredient i left join purchase p on i.id=p.ingid and i.brand_id=p.ingbrandid and i.brand_name=p.ingbrandname";
+            System.out.println("query: " + query);
             rs = stmt.executeQuery(query);
             while (rs.next()) {
                 tmp = new TableType();
@@ -323,12 +325,11 @@ public class Metodos<T> {
                 tmp.brand_id = rs.getInt("brand_id");
                 tmp.brand_name = rs.getString("brand_name");
                 tmp.type = rs.getInt("type");
-                tmp.date = rs.getDate("date");
-                tmp.po = rs.getInt("po");
-                tmp.vendor_id = rs.getInt("sb_vendor_id");
-                tmp.quantity = rs.getInt("suppliedQuantity");
+                tmp.date = rs.getDate("expDate");
+//                tmp.vendor_id = rs.getInt("sb_vendor_id");
+                tmp.quantity = rs.getInt("quantity");
                 tmp.size = rs.getInt("size");
-                tmp.units = rs.getInt("suppliedUnits");
+                tmp.units = rs.getInt("units");
                 tmp.cost = rs.getBigDecimal("cost");
                 System.out.println("name" + tmp.name);
                 retVal.add(tmp);
@@ -339,11 +340,58 @@ public class Metodos<T> {
         return retVal;
     }
 
-    public ArrayList<Object> popVTable() {
-        return new ArrayList<>(1);
+    public ArrayList<OrderType> popOrderTable() {
+        ArrayList<OrderType> retVal = new ArrayList<>();
+        String query;
+        conn = db.getConnection();
+        OrderType tmp;
+        try {
+            stmt = conn.createStatement();
+            query = "SELECT * FROM ingredient order by id,brand_ID";
+            System.out.println("query: " + query);
+            rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                tmp = new OrderType();
+                tmp.id = rs.getInt("id");
+                tmp.name = rs.getString("name");
+                tmp.brandID = rs.getInt("brand_id");
+                tmp.brandName = rs.getString("brand_name");
+                tmp.type = rs.getInt("type");
+                tmp.expDateNum = rs.getInt("expDateNum");
+                tmp.size = rs.getBigDecimal("size");
+                tmp.units = rs.getInt("units");
+                tmp.cost = rs.getBigDecimal("cost");
+                tmp.quantity = 0;
+                System.out.println("name" + tmp.name);
+                retVal.add(tmp);
+            }
+        } catch (SQLException sqle) {
+            System.out.println("SQLException: " + sqle);
+        }
+        return retVal;
     }
 
-    public ArrayList<Object> popIngTable() {
-        return new ArrayList<>(1);
+    public Object[][] popUsedTable() {
+        Object[][] retVal = null;
+        String query;
+        conn = db.getConnection();
+        try {
+            stmt = conn.createStatement();    
+            query = "Select ingredient_ID, brand_id, brand_Name, sum(ingredientQuantity * dishQuantity) as Total from has natural join consists_of where date='2023-11-21' group by ingredient_id, brand_ID, brand_Name";
+            System.out.println("query: " + query);
+            stmt.executeQuery(query);
+            int i = 0;
+            while (rs.next()){
+                System.out.println("name: " + rs.getString("brand_name"));
+                retVal[i] = new Object[4];
+                retVal[i][0] = rs.getInt("ingredient_ID");
+                retVal[i][1] = rs.getInt("brand_ID");
+                retVal[i][2] = rs.getString("brand_Name");        
+                retVal[i++][3] = rs.getBigDecimal("Total");
+            }
+        } catch (SQLException sqle) {
+            System.out.println("SQLException: " + sqle);
+        }
+        return retVal;
     }
 }

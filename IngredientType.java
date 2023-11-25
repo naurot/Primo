@@ -4,6 +4,8 @@
  */
 package my.contacteditor;
 
+import java.math.BigDecimal;
+
 /**
  *
  * @author 14107
@@ -15,6 +17,10 @@ public class IngredientType {
     int brandID;
     String brandName;
     int type;
+    BigDecimal cost;
+    BigDecimal size;
+    int units;
+    int expDateNum;
 
     public IngredientType() {
     }
@@ -26,6 +32,9 @@ public class IngredientType {
         brandID = ing.brandID;
         brandName = ing.brandName;
         type = ing.type;
+        cost = ing.cost;
+        size = ing.size;
+        units = ing.units;
+        expDateNum = ing.expDateNum;
     }
-
 }

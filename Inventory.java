@@ -22,24 +22,30 @@ public class Inventory extends javax.swing.JFrame {
      */
     Metodos metodos = new Metodos();
 
-    static ArrayList<TableType> dataIRaw = new ArrayList<>();
-    static String[] iTblHeadings = {"Ingredient", "Quantity", "Consuming/Day", "# Days", "Order"};
-    static Object[][] dataITbl = new Object[200][5];
+    static ArrayList<TableType> dataInvRaw = new ArrayList<>();
+    static String[] invTblHeadings = {"Location", "Ingredient", "PO#", "Quantity", "Date Ordered", "Exp Date"};
+    static Object[][] dataInvTbl = new Object[200][5];
+    static DefaultTableModel invModel;
+//    static JTable invTable;
 
-    static ArrayList<TableType> dataVRaw = new ArrayList<>();
-    static String[] vTblHeadings = {"Ingredient", "Unit", "Cost", "Exp Date", "Quantity", "Order"};
-    static Object[][] dataVTbl = new Object[200][5];
+    static ArrayList<OrderType> dataOrderRaw = new ArrayList<>();
+    static String[] orderTblHeadings = {"Ingredient", "Quantity", "Units", "Cost", "Exp Date"};
+    static Object[][] dataOrderTbl = new Object[200][6];
+    static DefaultTableModel orderModel;
+//    static JTable orderTable;
 
-    static ArrayList<TableType> dataIngRaw = new ArrayList<>();
+    static Object[][] dataIngRaw;
     static String[] ingTblHeadings = {"Ingredient", "Quantity", "Location", "Exp Date", "PO #"};
     static Object[][] dataIngTbl = new Object[200][5];
+    static DefaultTableModel ingModel;
+    static JTable ingTable = new JTable();
 
     @SuppressWarnings("empty-statement")
     public Inventory() {
         initComponents();
-        popITable();
-        popVTable();
-        popIngTable();
+        popInvTable();
+        popOrderTable();
+        popUsedTable();
     }
 
     /**
@@ -54,20 +60,15 @@ public class Inventory extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         iScrollPane = new javax.swing.JScrollPane();
-        iTable = new javax.swing.JTable(dataITbl, iTblHeadings);
+        invTable = new javax.swing.JTable(dataInvTbl, invTblHeadings);
         jLabel2 = new javax.swing.JLabel();
         jPanel7 = new javax.swing.JPanel();
         vScrollPane = new javax.swing.JScrollPane();
-        vTable = new javax.swing.JTable(dataVTbl, vTblHeadings);
+        orderTable = new javax.swing.JTable(dataOrderTbl, orderTblHeadings);
         jButton5 = new javax.swing.JButton();
         jButton6 = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
-        jPanel4 = new javax.swing.JPanel();
-        ingScrollPane = new javax.swing.JScrollPane();
-        ingTable = new javax.swing.JTable(dataIngTbl, ingTblHeadings);
-        jButton1 = new javax.swing.JButton();
-        jLabel4 = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
         SpinnerNumberModel dayModel = new SpinnerNumberModel(0,0,13,1);
         jSpinner1 = new javax.swing.JSpinner(dayModel);
@@ -77,6 +78,10 @@ public class Inventory extends javax.swing.JFrame {
         mealLbl = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
+        jPanel4 = new javax.swing.JPanel();
+        ingScrollPane = new javax.swing.JScrollPane();
+        gTable = new javax.swing.JTable(dataIngTbl, ingTblHeadings);
+        jLabel5 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Inventory");
@@ -85,14 +90,16 @@ public class Inventory extends javax.swing.JFrame {
 
         jPanel2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
 
-        iTable.setModel(new javax.swing.table.DefaultTableModel(
-            dataITbl, iTblHeadings));
-    iTable.addMouseListener(new java.awt.event.MouseAdapter() {
+        invTable.setModel(new javax.swing.table.DefaultTableModel(
+            dataInvTbl, invTblHeadings));
+    invTable.setColumnSelectionAllowed(true);
+    invTable.addMouseListener(new java.awt.event.MouseAdapter() {
         public void mouseClicked(java.awt.event.MouseEvent evt) {
-            iTableMouseClicked(evt);
+            invTableMouseClicked(evt);
         }
     });
-    iScrollPane.setViewportView(iTable);
+    iScrollPane.setViewportView(invTable);
+    invTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
     jLabel2.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
     jLabel2.setText("Inventory");
@@ -108,7 +115,7 @@ public class Inventory extends javax.swing.JFrame {
         .addGroup(jPanel2Layout.createSequentialGroup()
             .addGap(32, 32, 32)
             .addComponent(jLabel2)
-            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addContainerGap(550, Short.MAX_VALUE))
     );
     jPanel2Layout.setVerticalGroup(
         jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -116,19 +123,39 @@ public class Inventory extends javax.swing.JFrame {
             .addContainerGap()
             .addComponent(jLabel2)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(iScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 596, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addContainerGap())
+            .addComponent(iScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 443, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(159, 159, 159))
     );
 
     jPanel7.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
 
-    vTable.setModel(new javax.swing.table.DefaultTableModel(dataVTbl, vTblHeadings
+    orderTable.setModel(new javax.swing.table.DefaultTableModel(dataOrderTbl, orderTblHeadings
     ));
-    vScrollPane.setViewportView(vTable);
+    orderTable.setColumnSelectionAllowed(false);
+    orderTable.addMouseListener(new java.awt.event.MouseAdapter() {
+        public void mouseClicked(java.awt.event.MouseEvent evt) {
+            orderTableMouseClicked(evt);
+        }
+        public void mouseReleased(java.awt.event.MouseEvent evt) {
+            orderTableMouseReleased(evt);
+        }
+    });
+    System.out.println("Something happened");
+    vScrollPane.setViewportView(orderTable);
 
     jButton5.setText("Submit");
+    jButton5.addMouseListener(new java.awt.event.MouseAdapter() {
+        public void mouseClicked(java.awt.event.MouseEvent evt) {
+            jButton5MouseClicked(evt);
+        }
+    });
 
     jButton6.setText("Clear");
+    jButton6.addMouseListener(new java.awt.event.MouseAdapter() {
+        public void mouseClicked(java.awt.event.MouseEvent evt) {
+            jButton6MouseClicked(evt);
+        }
+    });
 
     jLabel3.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
     jLabel3.setText("Order");
@@ -143,13 +170,13 @@ public class Inventory extends javax.swing.JFrame {
             .addGap(86, 86, 86)
             .addComponent(jButton5)
             .addGap(36, 36, 36))
-        .addGroup(jPanel7Layout.createSequentialGroup()
-            .addGap(37, 37, 37)
-            .addComponent(jLabel3)
-            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
-            .addContainerGap()
-            .addComponent(vScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 613, Short.MAX_VALUE))
+            .addGap(0, 0, Short.MAX_VALUE)
+            .addComponent(vScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 501, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addGroup(jPanel7Layout.createSequentialGroup()
+            .addGap(46, 46, 46)
+            .addComponent(jLabel3)
+            .addContainerGap(426, Short.MAX_VALUE))
     );
     jPanel7Layout.setVerticalGroup(
         jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -157,8 +184,8 @@ public class Inventory extends javax.swing.JFrame {
             .addContainerGap()
             .addComponent(jLabel3)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(vScrollPane)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(vScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 673, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
             .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(jButton5)
                 .addComponent(jButton6))
@@ -166,47 +193,6 @@ public class Inventory extends javax.swing.JFrame {
     );
 
     jPanel3.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
-
-    jPanel4.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
-
-    ingTable.setModel(new javax.swing.table.DefaultTableModel(dataIngTbl, ingTblHeadings
-    ));
-    ingScrollPane.setViewportView(ingTable);
-
-    jButton1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-    jButton1.setText("Clear");
-
-    jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-    jLabel4.setText("some ingredient");
-
-    javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-    jPanel4.setLayout(jPanel4Layout);
-    jPanel4Layout.setHorizontalGroup(
-        jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addGroup(jPanel4Layout.createSequentialGroup()
-            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                .addGroup(jPanel4Layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(ingScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 751, Short.MAX_VALUE))
-                .addGroup(jPanel4Layout.createSequentialGroup()
-                    .addGap(16, 16, 16)
-                    .addComponent(jLabel4)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton1)
-                    .addGap(31, 31, 31)))
-            .addContainerGap())
-    );
-    jPanel4Layout.setVerticalGroup(
-        jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-            .addContainerGap()
-            .addComponent(ingScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-            .addGap(10, 10, 10)
-            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                .addComponent(jButton1)
-                .addComponent(jLabel4))
-            .addContainerGap())
-    );
 
     jPanel5.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
 
@@ -273,7 +259,7 @@ public class Inventory extends javax.swing.JFrame {
                     .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGap(0, 0, Short.MAX_VALUE))
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                    .addGap(0, 235, Short.MAX_VALUE)
+                    .addGap(0, 0, Short.MAX_VALUE)
                     .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(jPanel6, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jButton3, javax.swing.GroupLayout.Alignment.TRAILING))))
@@ -284,7 +270,7 @@ public class Inventory extends javax.swing.JFrame {
         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
             .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                 .addGroup(jPanel5Layout.createSequentialGroup()
-                    .addContainerGap(135, Short.MAX_VALUE)
+                    .addContainerGap(17, Short.MAX_VALUE)
                     .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                     .addComponent(jButton3))
@@ -301,20 +287,48 @@ public class Inventory extends javax.swing.JFrame {
     jPanel3.setLayout(jPanel3Layout);
     jPanel3Layout.setHorizontalGroup(
         jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addGroup(jPanel3Layout.createSequentialGroup()
+        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
             .addContainerGap()
-            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-            .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addContainerGap())
     );
     jPanel3Layout.setVerticalGroup(
         jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
             .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addContainerGap())
+    );
+
+    jPanel4.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+
+    gTable.setModel(new javax.swing.table.DefaultTableModel(dataIngTbl, ingTblHeadings
+    ));
+    ingScrollPane.setViewportView(gTable);
+
+    jLabel5.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
+    jLabel5.setText("Consuming");
+
+    javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+    jPanel4.setLayout(jPanel4Layout);
+    jPanel4Layout.setHorizontalGroup(
+        jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        .addGroup(jPanel4Layout.createSequentialGroup()
+            .addContainerGap()
+            .addComponent(ingScrollPane)
+            .addContainerGap())
+        .addGroup(jPanel4Layout.createSequentialGroup()
+            .addGap(27, 27, 27)
+            .addComponent(jLabel5)
+            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+    );
+    jPanel4Layout.setVerticalGroup(
+        jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+            .addContainerGap()
+            .addComponent(jLabel5)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(ingScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 385, Short.MAX_VALUE)
             .addContainerGap())
     );
 
@@ -322,14 +336,15 @@ public class Inventory extends javax.swing.JFrame {
     jPanel1.setLayout(jPanel1Layout);
     jPanel1Layout.setHorizontalGroup(
         jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addGroup(jPanel1Layout.createSequentialGroup()
+        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
             .addContainerGap()
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createSequentialGroup()
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addContainerGap())
     );
     jPanel1Layout.setVerticalGroup(
@@ -337,10 +352,14 @@ public class Inventory extends javax.swing.JFrame {
         .addGroup(jPanel1Layout.createSequentialGroup()
             .addContainerGap()
             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
             .addContainerGap())
     );
 
@@ -360,9 +379,9 @@ public class Inventory extends javax.swing.JFrame {
     pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void iTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_iTableMouseClicked
+    private void invTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_invTableMouseClicked
         // clicked row in ingredient table
-    }//GEN-LAST:event_iTableMouseClicked
+    }//GEN-LAST:event_invTableMouseClicked
 
     private void jButton3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton3MouseClicked
         // logout clicked
@@ -371,6 +390,62 @@ public class Inventory extends javax.swing.JFrame {
         setVisible(false);
         dispose();
     }//GEN-LAST:event_jButton3MouseClicked
+
+    private void orderTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_orderTableMouseClicked
+        // mouse click in Order Table
+        System.out.println("Order Tbl mouse clicked");
+        Object orderVal;
+        OrderType tmp;
+        int row = orderTable.getSelectedRow();
+        int col = orderTable.getSelectedColumn();
+        if (col == 1) {
+            tmp = dataOrderRaw.get(row);
+            orderVal = orderModel.getValueAt(row, col);
+            tmp.quantity = (int) orderVal;
+            dataOrderRaw.set(row, tmp);
+            System.out.println("Changing values??");
+        }
+    }//GEN-LAST:event_orderTableMouseClicked
+
+    private void jButton6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton6MouseClicked
+        // mouse click "Cancel" button in Order Table
+        for (OrderType item : dataOrderRaw) {
+            item.quantity = 0;
+        }
+        int i = 0;
+        for (OrderType row : dataOrderRaw) {
+            dataOrderTbl[i++] = row.toTable();
+        }
+//        orderTable = new JTable();
+        orderModel = new DefaultTableModel(dataOrderTbl, orderTblHeadings);
+        orderTable.setModel(orderModel);
+        vScrollPane.setViewportView(orderTable);
+
+    }//GEN-LAST:event_jButton6MouseClicked
+
+    private void jButton5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton5MouseClicked
+        // mouse click "Submit" button in Order Table
+        System.out.println("Submit clicked");
+      for (int i = 0; i < orderModel.getRowCount(); i++){
+          System.out.println("item: " + orderModel.getValueAt(i, 0) +", "+orderModel.getValueAt(i,1));
+      }
+    }//GEN-LAST:event_jButton5MouseClicked
+
+    private void orderTableMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_orderTableMouseReleased
+        // order table mouse released
+                System.out.println("Order Tbl mouse released");
+        Object orderVal;
+        OrderType tmp;
+        int row = orderTable.getSelectedRow();
+        int col = orderTable.getSelectedColumn();
+        if (col == 1) {
+            tmp = dataOrderRaw.get(row);
+            orderVal = orderModel.getValueAt(row, col);
+            tmp.quantity = (int) orderVal;
+            dataOrderRaw.set(row, tmp);
+            System.out.println("Changing values??");
+        }
+    }//GEN-LAST:event_orderTableMouseReleased
 
     /**
      * @param args the command line arguments
@@ -410,11 +485,10 @@ public class Inventory extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel dateLbl;
+    private javax.swing.JTable gTable;
     private javax.swing.JScrollPane iScrollPane;
-    private javax.swing.JTable iTable;
     private javax.swing.JScrollPane ingScrollPane;
-    private javax.swing.JTable ingTable;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JTable invTable;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton5;
@@ -422,7 +496,7 @@ public class Inventory extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -432,46 +506,47 @@ public class Inventory extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel7;
     private javax.swing.JSpinner jSpinner1;
     private javax.swing.JLabel mealLbl;
+    private javax.swing.JTable orderTable;
     private javax.swing.JScrollPane vScrollPane;
-    private javax.swing.JTable vTable;
     // End of variables declaration//GEN-END:variables
 
-    public void popITable() {
-        dataIRaw = metodos.popITable();
+    public void popInvTable() {
+        dataInvRaw = metodos.popInvTable();
         int i = 0;
-        for (TableType row : dataIRaw) {
-            dataITbl[i++] = row.toTbl();
+        for (TableType row : dataInvRaw) {
+            dataInvTbl[i++] = row.toTbl();
         }
-        iTable = new JTable();
-        DefaultTableModel iModel = new DefaultTableModel(dataITbl, iTblHeadings);
-        iTable.setModel(iModel);
-        iScrollPane.setViewportView(iTable);
+        invTable = new JTable();
+        invModel = new DefaultTableModel(dataInvTbl, invTblHeadings);
+        invTable.setModel(invModel);
+        iScrollPane.setViewportView(invTable);
 
 //select * from ingredients left join inventory on id=ingID sum(quantity)
 //        DefaultTableModel model = new DefaultTableModel(data,data.size());
 //        jTable1.setModel(model);
     }
 
-    public void popVTable() {
-        dataVRaw = metodos.popVTable();
+    public void popOrderTable() {
+        dataOrderRaw = metodos.popOrderTable();
         int i = 0;
-        for (TableType row : dataVRaw) {
-            dataVTbl[i++] = row.toTbl();
+        for (OrderType row : dataOrderRaw) {
+            dataOrderTbl[i++] = row.toTable();
         }
-        vTable = new JTable();
-        DefaultTableModel vModel = new DefaultTableModel(dataVTbl, vTblHeadings);
-        vTable.setModel(vModel);
-        vScrollPane.setViewportView(vTable);
+        orderTable = new JTable();
+        orderModel = new DefaultTableModel(dataOrderTbl, orderTblHeadings);
+        orderTable.setModel(orderModel);
+        vScrollPane.setViewportView(orderTable);
     }
 
-    public void popIngTable() {
-        dataIngRaw = metodos.popIngTable();
-        int i = 0;
-        for (TableType row : dataIngRaw) {
-            dataIngTbl[i++] = row.toTbl();
-        }
-        ingTable = new JTable();
-        DefaultTableModel ingModel = new DefaultTableModel(dataIngTbl, ingTblHeadings);
+    @SuppressWarnings("empty-statement")
+    public void popUsedTable() {
+        dataIngRaw = metodos.popUsedTable();
+
+//        for (Object[] row : dataIngRaw) {
+////            dataIngTbl[i++] = {row[0],row[1]};
+//        }
+//        ingModel = new DefaultTableModel(dataIngTbl, ingTblHeadings);
+        ingModel = new DefaultTableModel(dataIngRaw, ingTblHeadings);
         ingTable.setModel(ingModel);
         ingScrollPane.setViewportView(ingTable);
     }
