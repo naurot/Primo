@@ -17,7 +17,7 @@ public class OrderType extends IngredientType {
 //    static final String[][] unit = {{"each", "dozen"},
 //    {"dash", "tsp", "Tbs", "ounce", "cup", "lb"},
 //    {"splash", "tsp", "Tbs", "ounce", "cup", "pint", "quart", "gal"}};
-    int quantity;
+    BigDecimal quantity;
     Object expDate;
     int poNum;
 
@@ -32,7 +32,7 @@ public class OrderType extends IngredientType {
     public OrderType() {
     }
 
-    public OrderType(int q, int d, int p) {
+    public OrderType(BigDecimal q, int d, int p) {
         quantity = q;
         expDate = getDate(d);
         poNum = p;

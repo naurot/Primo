@@ -26,6 +26,8 @@ public class Inventory extends javax.swing.JFrame {
     static final String[][] unit = {{"each", "dozen"},
     {"dash", "tsp", "Tbs", "ounce", "cup", "lb"},
     {"splash", "tsp", "Tbs", "ounce", "cup", "pint", "quart", "gal"}};
+    static final BigDecimal bigOne = BigDecimal.valueOf(1);
+    static final BigDecimal bigZero = BigDecimal.valueOf(0);
 
     static ArrayList<TableType> dataInvRaw = new ArrayList<>();
     static String[] invTblHeadings = {"Location", "Ingredient", "PO#", "Quantity", "Date Ordered", "Exp Date"};
@@ -405,23 +407,12 @@ public class Inventory extends javax.swing.JFrame {
     private void orderTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_orderTableMouseClicked
         // mouse click in Order Table
         System.out.println("Order Tbl mouse clicked");
-//        Object orderVal;
-//        OrderType tmp;
-//        int row = orderTable.getSelectedRow();
-//        int col = orderTable.getSelectedColumn();
-//        if (col == 1) {
-//            tmp = dataOrderRaw.get(row);
-//            orderVal = orderModel.getValueAt(row, col);
-//            tmp.quantity = (int) orderVal;
-//            orderModel.setValueAt(tmp.quantity, row, col);
-//            System.out.println("Changing values??");
-//        }
     }//GEN-LAST:event_orderTableMouseClicked
 
     private void jButton6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton6MouseClicked
         // mouse click "Cancel" button in Order Table
         for (OrderType item : dataOrderRaw) {
-            item.quantity = 0;
+            item.quantity = BigDecimal.valueOf(0);
         }
         int i = 0;
         for (OrderType row : dataOrderRaw) {
@@ -438,25 +429,17 @@ public class Inventory extends javax.swing.JFrame {
         // mouse click "Submit" button in Order Table
         System.out.println("Submit clicked");
         for (OrderType item : dataOrderRaw) {
-            System.out.println(item.name + ", " + item.quantity);
+            if (item.quantity.compareTo(bigZero) == 1) {
+                System.out.println(item.name + ", " + item.quantity);
+            }
         }
-
+//metodos.submitOrder(dataOrderRaw)
+        popOrderTable();
     }//GEN-LAST:event_jButton5MouseClicked
 
     private void orderTableMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_orderTableMouseReleased
         // order table mouse released
-//                System.out.println("Order Tbl mouse released");
-//        Object orderVal;
-//        OrderType tmp;
-//        int row = orderTable.getSelectedRow();
-//        int col = orderTable.getSelectedColumn();
-//        if (col == 1) {
-//            tmp = dataOrderRaw.get(row);
-//            orderVal = orderModel.getValueAt(row, col);
-//            tmp.quantity = (int) orderVal;
-//            dataOrderRaw.set(row, tmp);
-//            System.out.println("Changing values??");
-//        }
+        System.out.println("Order Tbl mouse released");
     }//GEN-LAST:event_orderTableMouseReleased
 
     private void orderTableKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_orderTableKeyReleased
@@ -468,26 +451,29 @@ public class Inventory extends javax.swing.JFrame {
         if (col == 1) {
             tmp = dataOrderRaw.get(row);
             orderVal = orderTable.getValueAt(row, col).toString();
-            tmp.quantity = Integer.parseInt(orderVal);
-//            orderModel.setValueAt(tmp.quantity, row, col);
-            orderTable.setValueAt(tmp.quantity, row, col);
-            System.out.println("Changing values");
+            tmp.quantity = BigDecimal.valueOf(Double.parseDouble(orderVal));
+            orderModel.setValueAt(tmp.quantity.intValue(), row, col);
+            orderTable.setModel(orderModel);
+            vScrollPane.setViewportView(orderTable);
+            System.out.println("Changing values: key released");
         }
     }//GEN-LAST:event_orderTableKeyReleased
 
     private void orderTableKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_orderTableKeyTyped
         // key pressed
-//                String orderVal;
+//        String orderVal;
 //        OrderType tmp;
 //        int row = orderTable.getSelectedRow();
 //        int col = orderTable.getSelectedColumn();
 //        if (col == 1) {
 //            tmp = dataOrderRaw.get(row);
 //            orderVal = orderTable.getValueAt(row, col).toString();
-//            tmp.quantity = Integer.parseInt(orderVal);
-////            orderModel.setValueAt(tmp.quantity, row, col);
+//            tmp.quantity = BigDecimal.valueOf(Double.parseDouble(orderVal));
+//            orderModel.setValueAt(tmp.quantity, row, col);
 //            orderTable.setValueAt(tmp.quantity, row, col);
-//            System.out.println("Changing values");
+//            orderTable.setModel(orderModel);
+//            vScrollPane.setViewportView(orderTable);
+        System.out.println("Changing values: key pressed");
 //        }
     }//GEN-LAST:event_orderTableKeyTyped
 
@@ -578,6 +564,7 @@ public class Inventory extends javax.swing.JFrame {
 //        orderTable = new JTable();
         orderModel = new DefaultTableModel(dataOrderTbl, orderTblHeadings);
         orderTable.setModel(orderModel);
+        orderTable.setEditingColumn(1);
         vScrollPane.setViewportView(orderTable);
     }
 

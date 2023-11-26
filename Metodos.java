@@ -10,7 +10,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import javax.swing.*;
-
+import static my.contacteditor.Inventory.bigZero;
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
@@ -361,7 +361,7 @@ public class Metodos<T> {
                 tmp.size = rs.getBigDecimal("size");
                 tmp.units = rs.getInt("units");
                 tmp.cost = rs.getBigDecimal("cost");
-                tmp.quantity = 0;
+                tmp.quantity = bigZero;
                 System.out.println("name" + tmp.name);
                 retVal.add(tmp);
             }
