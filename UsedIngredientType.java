@@ -8,19 +8,23 @@ package my.contacteditor;
  *
  * @author 14107
  */
+
+
+    
 public class UsedIngredientType extends IngredientType{
     String amount;
-    String units;
-    
+    int units;
+        final String[][] unit = {{"each", "dozen"},{"dash", "tsp", "Tbs", "ounce", "cup", "lb"},{"splash", "tsp", "Tbs", "ounce", "cup", "pint", "quart", "gal"}};
+            
     public UsedIngredientType(){};
     
-    public UsedIngredientType(IngredientType ing, String amount, String units){
+    public UsedIngredientType(IngredientType ing, String amount, int units){
         super(ing);
         this.amount = amount;
         this.units= units;
     }
     
     public String toString(){
-        return amount + " " + units + " " + name.strip();
+        return amount + " " + unit[this.type][units] + " " + name.strip();
     }
 }

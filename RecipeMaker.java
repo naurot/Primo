@@ -20,9 +20,10 @@ public class RecipeMaker extends javax.swing.JFrame {
     static int ingListIdx = -1;
 
     final String[][] unit = {{"each", "dozen"},
-                               {"dash", "tsp", "Tbs", "ounce", "cup", "lb"},
-                               {"splash", "tsp", "Tbs", "ounce", "cup", "pint", "quart", "gal"}};
-String[] units = unit[2];
+    {"dash", "tsp", "Tbs", "ounce", "cup", "lb"},
+    {"splash", "tsp", "Tbs", "ounce", "cup", "pint", "quart", "gal"}};
+    String[] units = unit[0];
+
     /**
      * Creates new form RecipeMaker
      */
@@ -650,7 +651,7 @@ String[] units = unit[2];
             // metodos
             // if create -> create dish, then create consists_of
             //    update -> update consists_of (update dish too???)
-            // and whart's the fucking query for this???
+            // and whart's the query for this???
             DishType newRecipe = new DishType();
             newRecipe.id = getDishID();
             newRecipe.name = recipeNameTextField.getText();
@@ -698,6 +699,7 @@ String[] units = unit[2];
                 //creating new recipe; selected ingredient; put ingredient in edit box
                 setIngListIdx(ingOrDishList.getSelectedIndex());
                 units = unit[ingredientList.get(getIngListIdx()).type];
+                ingMeasureCombo.setModel(new javax.swing.DefaultComboBoxModel<>(units));
                 System.out.println("Editing: " + ingredientList.get(getIngListIdx()).name);
                 String selectedItem = ingOrDishList.getSelectedValue();
                 //if the ingredient is already in accepted list,
@@ -765,6 +767,8 @@ String[] units = unit[2];
             } else {
                 System.out.println("Updating recipe, selecting from ingredient list");
                 setIngListIdx(ingOrDishList.getSelectedIndex());
+                units = unit[ingredientList.get(getIngListIdx()).type];
+                ingMeasureCombo.setModel(new javax.swing.DefaultComboBoxModel<>(units));
                 ingredientRecipeTextBox.setText(ingOrDishList.getSelectedValue());
                 System.out.println("Editing: " + ingredientList.get(ingOrDishList.getSelectedIndex()).name);
                 String selectedItem = ingOrDishList.getSelectedValue();
@@ -814,11 +818,11 @@ String[] units = unit[2];
                 && !(ingQuantityTextField.getText().equals("") || (Float.parseFloat(ingQuantityTextField.getText()) < 0.001))) {
 //            String ing = ingredientRecipeTextBox.getText();
             String amount = ingQuantityTextField.getText();
-            String units = ingMeasureCombo.getSelectedItem().toString();
+            int units = ingMeasureCombo.getSelectedIndex();
             usedTmp = new UsedIngredientType(ingredientList.get(getIngListIdx()), amount, units);
             setIngListIdx(-1);
             usedIngList.add(usedTmp);
-            acceptedIngModel.addElement(amount + " " + units + "      " + usedTmp.name);
+            acceptedIngModel.addElement(amount + " " + unit[usedTmp.type][units] + "      " + usedTmp.name);
             acceptedIngList.setModel(acceptedIngModel);
             ingredientRecipeTextBox.setText("");
             ingQuantityTextField.setText("");
@@ -849,6 +853,11 @@ String[] units = unit[2];
         if (ingredientRecipeTextBox.getText().isEmpty() && index >= 0) {
 
             UsedIngredientType tmp = usedIngList.get(index);
+            //??
+                            units = unit[tmp.type];
+                ingMeasureCombo.setModel(new javax.swing.DefaultComboBoxModel<>(units));
+                ingMeasureCombo.setSelectedIndex(tmp.units);
+                //??
             for (int i = 0; i < ingredientList.size(); i++) {
                 IngredientType ing = ingredientList.get(i);
                 if (ing.id == tmp.id && ing.brandID == tmp.brandID && ing.brandName.equals(tmp.brandName)) {

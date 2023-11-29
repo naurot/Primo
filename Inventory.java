@@ -427,14 +427,18 @@ public class Inventory extends javax.swing.JFrame {
 
     private void jButton5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton5MouseClicked
         // mouse click "Submit" button in Order Table
+        ArrayList<OrderType> purchaseOrder = new ArrayList<>();
         System.out.println("Submit clicked");
         for (OrderType item : dataOrderRaw) {
             if (item.quantity.compareTo(bigZero) == 1) {
+                purchaseOrder.add(item);
                 System.out.println(item.name + ", " + item.quantity);
             }
         }
-//metodos.submitOrder(dataOrderRaw)
+        if (purchaseOrder.size() > 0)
+            metodos.submitOrder(purchaseOrder);
         popOrderTable();
+        popInvTable();
     }//GEN-LAST:event_jButton5MouseClicked
 
     private void orderTableMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_orderTableMouseReleased

@@ -115,8 +115,8 @@ public class Metodos<T> {
                 tmp.brandID = rs.getInt("Brand_ID");
                 tmp.brandName = rs.getString("Brand_Name");
                 tmp.type = rs.getInt("Type");
-                tmp.amount = rs.getString("Quantity");
-                tmp.units = rs.getString("Units");
+                tmp.amount = rs.getString("IngredientQuantity");
+                tmp.units = rs.getInt("IngredientUnits");
                 System.out.println("Units: " + tmp.units);
                 list.add(tmp);
             }
@@ -158,7 +158,7 @@ public class Metodos<T> {
                         + u.id + ","
                         + u.brandID + ","
                         + quote + u.brandName + quote + ","
-                        + u.type + ","
+//                        + u.type + ","
                         + u.amount + ","
                         + u.units + ")";
                 System.out.println("query: " + query);
@@ -187,7 +187,7 @@ public class Metodos<T> {
                         + u.id + ","
                         + u.brandID + ","
                         + quote + u.brandName + quote + ","
-                        + u.type + ","
+//                        + u.type + ","
                         + u.amount + ","
                         + u.units + ")";
                 System.out.println("update query: " + query);
@@ -369,6 +369,39 @@ public class Metodos<T> {
             System.out.println("SQLException: " + sqle);
         }
         return retVal;
+    }
+    
+    public void submitOrder(ArrayList<OrderType> po){
+        String query;
+        conn = db.getConnection();
+        OrderType tmp;
+        try {
+            // create purchase order with todays date
+            //retrieve purchase order #
+            //insert data from po array, po tabel, ing table into purchase table
+            
+            
+            stmt = conn.createStatement();
+            query = "SELECT * FROM ingredient order by id,brand_ID";
+            System.out.println("query: " + query);
+            rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                tmp = new OrderType();
+                tmp.id = rs.getInt("id");
+                tmp.name = rs.getString("name");
+                tmp.brandID = rs.getInt("brand_id");
+                tmp.brandName = rs.getString("brand_name");
+                tmp.type = rs.getInt("type");
+                tmp.expDateNum = rs.getInt("expDateNum");
+                tmp.size = rs.getBigDecimal("size");
+                tmp.units = rs.getInt("units");
+                tmp.cost = rs.getBigDecimal("cost");
+                tmp.quantity = bigZero;
+                System.out.println("name" + tmp.name);
+            }
+        } catch (SQLException sqle) {
+            System.out.println("SQLException: " + sqle);
+        }
     }
 
     public Object[][] popUsedTable() {
