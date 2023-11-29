@@ -12,15 +12,16 @@ import java.sql.Date;
  * @author 14107
  */
 public class TableType {
-    int id, brand_id, type, po, vendor_id, quantity, size, units, sloc, sunit, sshelf;
+    int id, brand_id, type, po, vendor_id, quantity, units, sloc, sunit, sshelf, expDateNum;
     String name, brand_name;
-    Date date;
-    BigDecimal cost;
+Date expDate;
+    BigDecimal cost, size;
     
     public TableType(){
     
     }
-    public TableType(int id, String name, int brandID, String brandName, int type, Date date, int po, int vendorID, int sQuantity, int size, int sUnits, BigDecimal cost){
+//  
+      public TableType(int id, String name, int brandID, String brandName, int type, int expDateNum, int po, int vendorID, int sQuantity, int size, int sUnits, BigDecimal cost, Date expDate){
         
     }
     public Object[] toTbl(){
@@ -28,9 +29,10 @@ public class TableType {
         retVal[0] = 0;
         retVal[1] = name;
         retVal[2] = 0;
-        retVal[3] = quantity;
-        retVal[4] = false;
-        retVal[5] = 0;
+//        retVal[3] = quantity;
+        retVal[3] = size;
+        retVal[4] = 0;
+        retVal[5] = expDate;
         return retVal;
     }
 }

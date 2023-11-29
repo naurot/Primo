@@ -35,7 +35,7 @@ public class Inventory extends javax.swing.JFrame {
     static DefaultTableModel invModel;
 
     static ArrayList<OrderType> dataOrderRaw = new ArrayList<>();
-    static String[] orderTblHeadings = {"Ingredient", "Quantity", "Units", "Cost", "Exp Date"};
+    static String[] orderTblHeadings = {"Ingredient", "Quantity", "Units", "Cost", "Exp in Days"};
     static Object[][] dataOrderTbl = new Object[200][6];
     static DefaultTableModel orderModel;
 
@@ -89,6 +89,7 @@ public class Inventory extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Inventory");
+        setResizable(false);
 
         jPanel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
 
@@ -135,7 +136,6 @@ public class Inventory extends javax.swing.JFrame {
 
     orderTable.setModel(new javax.swing.table.DefaultTableModel(dataOrderTbl, orderTblHeadings
     ));
-    orderTable.setColumnSelectionAllowed(false);
     orderTable.addMouseListener(new java.awt.event.MouseAdapter() {
         public void mouseClicked(java.awt.event.MouseEvent evt) {
             orderTableMouseClicked(evt);
@@ -221,6 +221,11 @@ public class Inventory extends javax.swing.JFrame {
     mealLbl.setToolTipText("");
 
     jButton2.setText("Cook");
+    jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
+        public void mouseClicked(java.awt.event.MouseEvent evt) {
+            jButton2MouseClicked(evt);
+        }
+    });
 
     javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
     jPanel6.setLayout(jPanel6Layout);
@@ -480,6 +485,16 @@ public class Inventory extends javax.swing.JFrame {
         System.out.println("Changing values: key pressed");
 //        }
     }//GEN-LAST:event_orderTableKeyTyped
+
+    private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
+        // Cook button clicked
+        // cook first available meal
+        //      get Meal/Date from Menu
+        //      get consists_of quantity * all ingredients in all dishes
+        //      remove this from inventory
+        //      display current inventory
+        //      remove date/meal from menu ??
+    }//GEN-LAST:event_jButton2MouseClicked
 
     /**
      * @param args the command line arguments

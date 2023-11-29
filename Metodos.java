@@ -9,8 +9,10 @@ import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import javax.swing.*;
 import static my.contacteditor.Inventory.bigZero;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
@@ -23,6 +25,7 @@ import static my.contacteditor.Inventory.bigZero;
 public class Metodos<T> {
 
     static SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+    static SimpleDateFormat sqf = new SimpleDateFormat("yyyy-MM-dd");
     Database db = new Database();
     Connection conn = null;
     Statement stmt = null;
@@ -158,7 +161,7 @@ public class Metodos<T> {
                         + u.id + ","
                         + u.brandID + ","
                         + quote + u.brandName + quote + ","
-//                        + u.type + ","
+                        //                        + u.type + ","
                         + u.amount + ","
                         + u.units + ")";
                 System.out.println("query: " + query);
@@ -187,7 +190,7 @@ public class Metodos<T> {
                         + u.id + ","
                         + u.brandID + ","
                         + quote + u.brandName + quote + ","
-//                        + u.type + ","
+                        //                        + u.type + ","
                         + u.amount + ","
                         + u.units + ")";
                 System.out.println("update query: " + query);
@@ -313,8 +316,7 @@ public class Metodos<T> {
         try {
             stmt = conn.createStatement();
 //            SELECT * FROM ((inventory natural join stocks)  right join suppliedby on purchaseorder = po and vendor_id = sb_vendor_id);
-            query = "SELECT * FROM ingredient left join (SELECT id, name, brand_id, brand_name, SUM(quantity) as Total from inventory group by id, brand_id, brand_name) on ingredient.id = inventory.ing_id)";
-            query = "select i.id,name,i.brand_id,i.brand_name,type,date,po,sb_vendor_id, suppliedquantity,size,suppliedunits,cost from ingredient i left join po p on i.id=p.ingid and i.brand_id=p.brand_id and i.brand_name=p.brand_name";
+//            query = "SELECT * FROM ingredient left join (SELECT id, name, brand_id, brand_name, SUM(quantity) as Total from inventory group by id, brand_id, brand_name) on ingredient.id = inventory.ing_id)";
             query = "select * from ingredient i left join purchase p on i.id=p.ingid and i.brand_id=p.ingbrandid and i.brand_name=p.ingbrandname";
             System.out.println("query: " + query);
             rs = stmt.executeQuery(query);
@@ -325,10 +327,12 @@ public class Metodos<T> {
                 tmp.brand_id = rs.getInt("brand_id");
                 tmp.brand_name = rs.getString("brand_name");
                 tmp.type = rs.getInt("type");
-                tmp.date = rs.getDate("expDate");
+                tmp.units = rs.getInt("units");
+                tmp.expDate = rs.getDate("expDate");
+//                tmp.expDateNum = rs.getInt("expDate");
 //                tmp.vendor_id = rs.getInt("sb_vendor_id");
                 tmp.quantity = rs.getInt("quantity");
-                tmp.size = rs.getInt("size");
+                tmp.size = rs.getBigDecimal("size");
                 tmp.units = rs.getInt("units");
                 tmp.cost = rs.getBigDecimal("cost");
                 System.out.println("name" + tmp.name);
@@ -370,38 +374,69 @@ public class Metodos<T> {
         }
         return retVal;
     }
-    
-    public void submitOrder(ArrayList<OrderType> po){
+
+    public void submitOrder(ArrayList<OrderType> po) {
         String query;
         conn = db.getConnection();
+        String date = sqf.format(new Date());
         OrderType tmp;
+        System.out.println("In submit order");
+        if (po.isEmpty()) {
+            return;
+        }
         try {
-            // create purchase order with todays date
-            //retrieve purchase order #
-            //insert data from po array, po tabel, ing table into purchase table
-            
-            
-            stmt = conn.createStatement();
-            query = "SELECT * FROM ingredient order by id,brand_ID";
+            query = "INSERT INTO po (date) VALUES ('" + date + "')";
             System.out.println("query: " + query);
-            rs = stmt.executeQuery(query);
-            while (rs.next()) {
-                tmp = new OrderType();
-                tmp.id = rs.getInt("id");
-                tmp.name = rs.getString("name");
-                tmp.brandID = rs.getInt("brand_id");
-                tmp.brandName = rs.getString("brand_name");
-                tmp.type = rs.getInt("type");
-                tmp.expDateNum = rs.getInt("expDateNum");
-                tmp.size = rs.getBigDecimal("size");
-                tmp.units = rs.getInt("units");
-                tmp.cost = rs.getBigDecimal("cost");
-                tmp.quantity = bigZero;
-                System.out.println("name" + tmp.name);
+            PreparedStatement prepStmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            int affectedRows = prepStmt.executeUpdate();
+            if (affectedRows > 0) {
+                rs = prepStmt.getGeneratedKeys();
+                if (rs.next()) {
+                    int poNum = rs.getInt(1);
+                    System.out.println("last id: " + poNum);
+                    for (OrderType item : po) {
+                        query = "INSERT INTO purchase VALUES("
+                                + item.id + ","
+                                + item.brandID + ",'"
+                                + item.brandName + "',"
+                                + poNum + ","
+                                + item.quantity + ","
+                                + "'" + getExpDate(item.expDateNum)
+                                + "')";
+                        System.out.println("query: " + query);
+                        prepStmt = conn.prepareStatement(query);
+                        prepStmt.executeUpdate();
+                    }
+                    //insert into inventory
+                    for (OrderType item : po) {
+                        query = "INSERT INTO inventory VALUES("
+                                + null +","
+                                + 1 + ","
+                                + 1 + ","
+                                + item.id + ","
+                                + item.brandID + ",'"
+                                + item.brandName + "',"
+                                + poNum + ","
+                                + item.quantity.multiply(item.size) + ")";
+                        System.out.println("query: " + query);
+                        prepStmt = conn.prepareStatement(query);
+                        prepStmt.executeUpdate();
+                    }
+                }
+            } else {
+                System.out.println("ERROR: submit order, but auto-incremented key not returned");
             }
         } catch (SQLException sqle) {
             System.out.println("SQLException: " + sqle);
         }
+    }
+
+    public String getExpDate(int num) {
+        Date date = new Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.DATE, num);
+        return sqf.format(cal.getTime());
     }
 
     public Object[][] popUsedTable() {
@@ -409,17 +444,17 @@ public class Metodos<T> {
         String query;
         conn = db.getConnection();
         try {
-            stmt = conn.createStatement();    
+            stmt = conn.createStatement();
             query = "Select ingredient_ID, brand_id, brand_Name, sum(ingredientQuantity * dishQuantity) as Total from has natural join consists_of where date='2023-11-21' group by ingredient_id, brand_ID, brand_Name";
             System.out.println("query: " + query);
             stmt.executeQuery(query);
             int i = 0;
-            while (rs.next()){
+            while (rs.next()) {
                 System.out.println("name: " + rs.getString("brand_name"));
                 retVal[i] = new Object[4];
                 retVal[i][0] = rs.getInt("ingredient_ID");
                 retVal[i][1] = rs.getInt("brand_ID");
-                retVal[i][2] = rs.getString("brand_Name");        
+                retVal[i][2] = rs.getString("brand_Name");
                 retVal[i++][3] = rs.getBigDecimal("Total");
             }
         } catch (SQLException sqle) {
