@@ -488,6 +488,8 @@ public class Inventory extends javax.swing.JFrame {
 
     private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
         // Cook button clicked
+        System.out.println("Cook button clicked!");
+        metodos.cookMeal();
         // cook first available meal
         //      get Meal/Date from Menu
         //      get consists_of quantity * all ingredients in all dishes
