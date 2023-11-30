@@ -1,5 +1,6 @@
 package my.contacteditor;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.util.Date;
 import java.sql.PreparedStatement;
@@ -317,24 +318,23 @@ public class Metodos<T> {
             stmt = conn.createStatement();
 //            SELECT * FROM ((inventory natural join stocks)  right join suppliedby on purchaseorder = po and vendor_id = sb_vendor_id);
 //            query = "SELECT * FROM ingredient left join (SELECT id, name, brand_id, brand_name, SUM(quantity) as Total from inventory group by id, brand_id, brand_name) on ingredient.id = inventory.ing_id)";
-            query = "select * from ingredient i left join purchase p on i.id=p.ingid and i.brand_id=p.ingbrandid and i.brand_name=p.ingbrandname";
+            query = "select n.*,name,cost,date,expdate,size from po join inventory n join ingredient i join purchase c where n.ingID=i.id and c.ingID=i.id and n.ingBrandId=i.Brand_ID and c.ingBrandID=i.Brand_ID and n.ingBrandName=i.Brand_Name and c.ingBrandName=i.Brand_Name and po.pid=n.po and c.ponum=po.pid";
             System.out.println("query: " + query);
             rs = stmt.executeQuery(query);
             while (rs.next()) {
                 tmp = new TableType();
-                tmp.id = rs.getInt("id");
+                tmp.location = rs.getInt("Location");
+                tmp.shelvingUnit = rs.getInt("ShelvingUnit");
+                tmp.shelf = rs.getInt("Shelf");
+                tmp.ingID = rs.getInt("ingID");
+                tmp.ingBrandID = rs.getInt("ingBrandID");
+                tmp.ingBrandName = rs.getString("ingBrandName");
+                tmp.po = rs.getInt("po");
+                tmp.quantity = rs.getBigDecimal("quantity");
                 tmp.name = rs.getString("name");
-                tmp.brand_id = rs.getInt("brand_id");
-                tmp.brand_name = rs.getString("brand_name");
-                tmp.type = rs.getInt("type");
-                tmp.units = rs.getInt("units");
-                tmp.expDate = rs.getDate("expDate");
-//                tmp.expDateNum = rs.getInt("expDate");
-//                tmp.vendor_id = rs.getInt("sb_vendor_id");
-                tmp.quantity = rs.getInt("quantity");
-                tmp.size = rs.getBigDecimal("size");
-                tmp.units = rs.getInt("units");
                 tmp.cost = rs.getBigDecimal("cost");
+                tmp.date = rs.getDate("date");
+                tmp.expDate = rs.getDate("expDate");
                 System.out.println("name" + tmp.name);
                 retVal.add(tmp);
             }
@@ -410,14 +410,14 @@ public class Metodos<T> {
                     //insert into inventory
                     for (OrderType item : po) {
                         query = "INSERT INTO inventory VALUES("
-                                + null +","
+                                + null + ","
                                 + 1 + ","
                                 + 1 + ","
                                 + item.id + ","
                                 + item.brandID + ",'"
                                 + item.brandName + "',"
                                 + poNum + ","
-                                + item.quantity.multiply(item.size) + ")";
+                                + item.size.multiply(item.quantity) + ")";
                         System.out.println("query: " + query);
                         prepStmt = conn.prepareStatement(query);
                         prepStmt.executeUpdate();
@@ -440,26 +440,78 @@ public class Metodos<T> {
     }
 
     public Object[][] popUsedTable() {
-        Object[][] retVal = null;
+        Object[][] retVal = new Object[200][4];
         String query;
         conn = db.getConnection();
         try {
             stmt = conn.createStatement();
-            query = "Select ingredient_ID, brand_id, brand_Name, sum(ingredientQuantity * dishQuantity) as Total from has natural join consists_of where date='2023-11-21' group by ingredient_id, brand_ID, brand_Name";
+            query = "Select ingredient_ID, brand_id, brand_Name, sum(ingredientQuantity * dishQuantity) as Total from has natural join consists_of where date='2023-11-30' group by ingredient_id, brand_ID, brand_Name";
             System.out.println("query: " + query);
-            stmt.executeQuery(query);
+            rs = stmt.executeQuery(query);
             int i = 0;
             while (rs.next()) {
                 System.out.println("name: " + rs.getString("brand_name"));
-                retVal[i] = new Object[4];
+//                retVal[i] = new Object[4];
                 retVal[i][0] = rs.getInt("ingredient_ID");
                 retVal[i][1] = rs.getInt("brand_ID");
                 retVal[i][2] = rs.getString("brand_Name");
-                retVal[i++][3] = rs.getBigDecimal("Total");
+                retVal[i++][3] = rs.getInt("Total");
             }
         } catch (SQLException sqle) {
             System.out.println("SQLException: " + sqle);
         }
         return retVal;
+    }
+
+    public void cookMeal() {
+        System.out.println("In cook meal");
+        String query;
+        Date date;
+        int meal = 0;
+        ArrayList<TableType> result = new ArrayList<>();
+        TableType tmp;
+
+        conn = db.getConnection();
+        try {
+            stmt = conn.createStatement();
+            query = "SELECT Date, Meal FROM menu ORDER BY Date, Meal LIMIT 1";
+            System.out.println("query: " + query);
+            rs = stmt.executeQuery(query);
+            if (rs.next()) {
+                date = rs.getDate("date");
+                meal = rs.getInt("meal");
+                System.out.println("Date: " + sdf.format(date) + "meal " + meal);
+            } else {
+                System.out.println("ERROR: no date/meal selected in cook meal");
+                return;
+            }
+            query = "Select ingredient_ID, brand_id, brand_Name, sum(ingredientQuantity * dishQuantity) as Total from has natural join consists_of where date='" + date + "' and meal=" + meal + " group by ingredient_id, brand_ID, brand_Name;";
+            System.out.println("query: " + query);
+            rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                tmp = new TableType();
+                tmp.ingID = rs.getInt("ingredient_ID");
+                tmp.ingBrandID = rs.getInt("brand_id");
+                tmp.ingBrandName = rs.getString("brand_name");
+                tmp.quantity = rs.getBigDecimal("quantity");
+                result.add(tmp);
+                System.out.println("ingre: " + tmp.ingID +", quantity: " + tmp.quantity);
+            }
+            if (result.size() > 0){
+                for (TableType item: result){
+                    
+                }
+            }else{
+                System.out.println("ERROR: we cooked a meal(?), but didn't retrieve any ingredients to delete from inventory");
+            }
+            //got tyhe meal, get the quantities of each dish from consists of
+            //   and multiply by thye amount of each ingredient in dish
+            //   then subtract from inventory
+            //   then delete the meal (or move it)
+            //   then repopulate invemtory table
+        } catch (SQLException sqle) {
+            System.out.println("SQLException: " + sqle);
+        }
+        System.out.println("left cook meal");
     }
 }
