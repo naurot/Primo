@@ -11,8 +11,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import javax.swing.*;
 import static my.contacteditor.Inventory.bigZero;
+import static my.contacteditor.Inventory.dataInvRaw;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -335,12 +338,13 @@ public class Metodos<T> {
                 tmp.cost = rs.getBigDecimal("cost");
                 tmp.date = rs.getDate("date");
                 tmp.expDate = rs.getDate("expDate");
-                System.out.println("name" + tmp.name);
+//                System.out.println("name" + tmp.name);
                 retVal.add(tmp);
             }
         } catch (SQLException sqle) {
             System.out.println("SQLException: " + sqle);
         }
+        dataInvRaw = retVal; // TODO change all references or ???
         return retVal;
     }
 
@@ -366,7 +370,7 @@ public class Metodos<T> {
                 tmp.units = rs.getInt("units");
                 tmp.cost = rs.getBigDecimal("cost");
                 tmp.quantity = bigZero;
-                System.out.println("name" + tmp.name);
+//                System.out.println("name" + tmp.name);
                 retVal.add(tmp);
             }
         } catch (SQLException sqle) {
@@ -450,7 +454,7 @@ public class Metodos<T> {
             rs = stmt.executeQuery(query);
             int i = 0;
             while (rs.next()) {
-                System.out.println("name: " + rs.getString("brand_name"));
+//                System.out.println("name: " + rs.getString("brand_name"));
 //                retVal[i] = new Object[4];
                 retVal[i][0] = rs.getInt("ingredient_ID");
                 retVal[i][1] = rs.getInt("brand_ID");
@@ -485,23 +489,50 @@ public class Metodos<T> {
                 System.out.println("ERROR: no date/meal selected in cook meal");
                 return;
             }
-            query = "Select ingredient_ID, brand_id, brand_Name, sum(ingredientQuantity * dishQuantity) as Total from has natural join consists_of where date='" + date + "' and meal=" + meal + " group by ingredient_id, brand_ID, brand_Name;";
+            query = "Select dish_id, ingredient_ID, brand_id, brand_Name, sum(ingredientQuantity * dishQuantity) as Total "
+                    + " from has natural join consists_of where date='" + date + "' and meal=" + meal
+                    + " group by dish_id, ingredient_id, brand_ID, brand_Name;";
             System.out.println("query: " + query);
             rs = stmt.executeQuery(query);
             while (rs.next()) {
                 tmp = new TableType();
+                tmp.dishID = rs.getInt("dish_id");
                 tmp.ingID = rs.getInt("ingredient_ID");
                 tmp.ingBrandID = rs.getInt("brand_id");
                 tmp.ingBrandName = rs.getString("brand_name");
-                tmp.quantity = rs.getBigDecimal("quantity");
+                tmp.quantity = rs.getBigDecimal("Total");
                 result.add(tmp);
-                System.out.println("ingre: " + tmp.ingID +", quantity: " + tmp.quantity);
+                System.out.println("ing: " + tmp.ingID + ", quantity: " + tmp.quantity);
             }
-            if (result.size() > 0){
-                for (TableType item: result){
-                    
+            if (result.size() > 0) {
+                for (TableType item : result) {
+                    dataInvRaw = popInvTable();
+                    ArrayList<TableType> list = getSorted(dataInvRaw, item);
+                    if (dataInvRaw.isEmpty()) {
+                        System.out.println("Out of EVERYTHING");
+                    }
+                    if (list.isEmpty()) {
+                        System.out.println("Out of " + item.ingID);
+                    }
+                    System.out.println("item: " + item.ingID + "," + +item.ingBrandID + "," + item.ingBrandName);
+                    int index = 0;
+                    while (item.quantity.compareTo(bigZero) == 1 && !list.isEmpty()) {
+                        if (item.quantity.compareTo(list.get(index).quantity) <= 0) {//item <= thing.inInventory
+                            writeLog(list.get(index), item, item.quantity, meal);
+                            list.get(index).quantity = list.get(index).quantity.subtract(item.quantity);
+                            item.quantity = bigZero;
+                        } else {        //item > thing.inInventory
+                            writeLog(list.get(index), item, list.get(index).quantity, meal);
+                            item.quantity = item.quantity.subtract(list.get(index).quantity);
+                            list.get(index).quantity = bigZero;
+                        }
+                        if (list.get(index).quantity.compareTo(bigZero) == 0) {
+                            // remove thing.inInventory
+                        }
+                        index++;
+                    }
                 }
-            }else{
+            } else {
                 System.out.println("ERROR: we cooked a meal(?), but didn't retrieve any ingredients to delete from inventory");
             }
             //got tyhe meal, get the quantities of each dish from consists of
@@ -513,5 +544,32 @@ public class Metodos<T> {
             System.out.println("SQLException: " + sqle);
         }
         System.out.println("left cook meal");
+    }
+
+    public ArrayList<TableType> getSorted(ArrayList<TableType> list, TableType ing) {
+        Collections.sort(list, Comparator.comparing(TableType::getDate));
+//        list.sort((Comparator<? super TableType>) date);
+        list.removeIf(l -> (l.ingID != ing.ingID || l.ingBrandID != ing.ingBrandID || !l.ingBrandName.equals(ing.ingBrandName)));
+        return list;
+    }
+
+    public void writeLog(TableType thing1, TableType thing2, BigDecimal amount, int meal) {
+        conn = db.getConnection();
+        String query;
+        try {
+
+            stmt = conn.createStatement();
+            query = "INSERT INTO log VALUES ("
+                    + thing2.dishID + ","
+                    + amount + ","
+                    + thing1.logValues() + ",'"
+                    + sqf.format(new Date()) + "',"
+                    + meal + ")";
+            System.out.println("query: " + query);
+            stmt.executeUpdate(query);
+
+        } catch (SQLException sqle) {
+            System.out.println("SQLException: " + sqle);
+        }
     }
 }

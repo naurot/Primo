@@ -774,6 +774,7 @@ public class RecipeMaker extends javax.swing.JFrame {
                 String selectedItem = ingOrDishList.getSelectedValue();
                 int i;
                 int j = -1;
+                System.out.println("In RM, Update recipe, selected usedIng from Ing list");
                 for (i = 0; i < usedIngList.size(); i++) {
                     if (usedIngList.get(i).name.equals(selectedItem)) {
                         ingQuantityTextField.setText(usedIngList.get(i).amount);
