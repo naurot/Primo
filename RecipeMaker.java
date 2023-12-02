@@ -778,7 +778,7 @@ public class RecipeMaker extends javax.swing.JFrame {
                 for (i = 0; i < usedIngList.size(); i++) {
                     if (usedIngList.get(i).name.equals(selectedItem)) {
                         ingQuantityTextField.setText(usedIngList.get(i).amount);
-                        ingMeasureCombo.setSelectedItem(usedIngList.get(i).units);
+                        ingMeasureCombo.setSelectedIndex(usedIngList.get(i).units);
                         j = i;
                     }
                 }
@@ -855,10 +855,10 @@ public class RecipeMaker extends javax.swing.JFrame {
 
             UsedIngredientType tmp = usedIngList.get(index);
             //??
-                            units = unit[tmp.type];
-                ingMeasureCombo.setModel(new javax.swing.DefaultComboBoxModel<>(units));
-                ingMeasureCombo.setSelectedIndex(tmp.units);
-                //??
+            units = unit[tmp.type];
+            ingMeasureCombo.setModel(new javax.swing.DefaultComboBoxModel<>(units));
+            ingMeasureCombo.setSelectedIndex(tmp.units);
+            //??
             for (int i = 0; i < ingredientList.size(); i++) {
                 IngredientType ing = ingredientList.get(i);
                 if (ing.id == tmp.id && ing.brandID == tmp.brandID && ing.brandName.equals(tmp.brandName)) {
