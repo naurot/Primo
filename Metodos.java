@@ -520,18 +520,36 @@ public class Metodos<T> {
                         if (item.quantity.compareTo(list.get(index).quantity) <= 0) {//item <= thing.inInventory
                             writeLog(list.get(index), item, item.quantity, meal);
                             list.get(index).quantity = list.get(index).quantity.subtract(item.quantity);
+                            query = "UPDATE inventory SET quantity=" + list.get(index).quantity
+                                    + " WHERE location=" + list.get(index).location
+                                    + " and shelvingUnit=" + list.get(index).shelvingUnit
+                                    + " and shelf=" + list.get(index).shelf;
+                            stmt.executeUpdate(query);
                             item.quantity = bigZero;
                         } else {        //item > thing.inInventory
                             writeLog(list.get(index), item, list.get(index).quantity, meal);
                             item.quantity = item.quantity.subtract(list.get(index).quantity);
                             list.get(index).quantity = bigZero;
+
+                            query = "DELETE FROM inventory WHERE location=" + list.get(index).location
+                                    + " and shelvingUnit=" + list.get(index).shelvingUnit
+                                    + " and shelf=" + list.get(index).shelf;
+                            stmt.executeUpdate(query);
                         }
                         if (list.get(index).quantity.compareTo(bigZero) == 0) {
                             // remove thing.inInventory
+                            query = "DELETE FROM inventory WHERE location=" + list.get(index).location
+                                    + " and shelvingUnit=" + list.get(index).shelvingUnit
+                                    + " and shelf=" + list.get(index).shelf;
+                            stmt.executeUpdate(query);
                         }
                         index++;
                     }
                 }
+                query = "DELETE FROM has WHERE date='" + date + "' and meal=" + meal;
+                stmt.executeUpdate(query);
+                query = "DELETE FROM menu WHERE date='" + date + "' and meal=" + meal;
+                stmt.executeUpdate(query);
             } else {
                 System.out.println("ERROR: we cooked a meal(?), but didn't retrieve any ingredients to delete from inventory");
             }

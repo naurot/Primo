@@ -203,7 +203,7 @@ public class LoginUI extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
 
-        System.out.println("Something clicked!");
+//        System.out.println("Something clicked!");
 //                Statement stmt = null;
         ResultSet rs = null;
         try {
